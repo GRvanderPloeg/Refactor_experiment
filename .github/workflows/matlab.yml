@@ -46,7 +46,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       # Alternatively, run tasks from your buildfile.m.
-      # - name: Run MATLAB build
+      # - name: Run MATLAB build temp
       #   uses: matlab-actions/run-build@v2
       #   with:
       #     tasks: test
