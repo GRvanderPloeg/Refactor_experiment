@@ -370,18 +370,21 @@ end
 function test_matrix_CP_partialcoupling(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'CP';
     sz     = {50,30,40,50,70};
     modes  = {[1 2 3], [4 5]};
     lambdas_data= {[1 1 1 1], [1 1 1]};
+    noise = 0.2;
 
     coupling.lin_coupled_modes = [1 0 0 1 0];
     coupling.coupling_type = 4;
     coupling.coupl_trafo_matrices = cell(5,1);
     coupling.coupl_trafo_matrices{1} = eye(4,4);
     coupling.coupl_trafo_matrices{4} = [eye(3,3);0 0 0];
-
+    
+    normalize_columns = 0;
     distr_data = {@(x,y) rand(x,y), @(x,y) randn(x,y),@(x,y) randn(x,y),@(x,y) rand(x,y),@(x,y) rand(x,y)};
 
     loss_function{1} = 'Frobenius';
@@ -408,7 +411,7 @@ function test_matrix_CP_partialcoupling(testCase)
     init_options.distr = distr_data;
     init_options.normalize = 1;
     Z.object{1} = tensor(rand(50,30,40));
-    Z.object{1} = tensor(rand(50,70));
+    Z.object{1} = tensor(rand(50,6));
 
     cmtf.utils.init_coupled_AOADMM_CMTF(Z,'init_options', init_options);
 end
@@ -416,11 +419,13 @@ end
 function test_CP_CP_doublesamplingrate(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'CP';
     sz     = {50,30,40,100,70,80};
     modes  = {[1 2 3], [4 5 6]};
     lambdas_data= {[1 1 1 1], [1 1 1 1]};
+    noise = 0.2;
 
     coupling.lin_coupled_modes = [1 0 0 1 0 0];
     coupling.coupling_type = 1;
@@ -430,7 +435,8 @@ function test_CP_CP_doublesamplingrate(testCase)
     for i=1:50
       coupling.coupl_trafo_matrices{4}(i,i+(i-1)) = 1; %take every second entry
     end
-
+    
+    normalize_columns = 0;
     distr_data = {@(x,y) randn(x,y),@(x,y) randn(x,y), @(x,y) randn(x,y),@(x,y) randn(x,y),@(x,y) randn(x,y),@(x,y) rand(x,y)};
 
     loss_function{1} = 'Frobenius';
@@ -456,8 +462,12 @@ function test_CP_CP_doublesamplingrate(testCase)
     init_options.nvecs = 0;
     init_options.distr = distr_data;
     init_options.normalize = 1;
-    Z.object{1} = tensor(rand(50,30,40));
-    Z.object{2} = tensor(rand(100,70,80));
+    
+    [X, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',Z.loss_function); %create data
+
+    for p=1:P
+        Z.object{p} = X{p};
+    end
 
     cmtf.utils.init_coupled_AOADMM_CMTF(Z,'init_options', init_options);
 end
@@ -465,17 +475,20 @@ end
 function test_matrix_matrix_CP(testCase)
     rng(0,'twister');
 
+    P = 3;
     model{1} = 'CP';
     model{2} = 'CP';
     model{3} = 'CP';
     sz     = {50,60,40,50,70,60,80};
     modes  = {[1 2 3], [4 5],[6 7]};
     lambdas_data= {[1 1 1], [1 1 1], [1 1 1]};
+    noise = 0.2;
 
     coupling.lin_coupled_modes = [1 2 0 1 0 2 0];
     coupling.coupling_type = [0 0]; 
     coupling.coupl_trafo_matrices = cell(7,1);
-
+    
+    normalize_columns = 0;
     distr_data = {@(x,y) rand(x,y), @(x,y) rand(x,y),@(x,y) randn(x,y),@(x,y) rand(x,y),@(x,y) rand(x,y),@(x,y) rand(x,y),@(x,y) rand(x,y)};
 
     loss_function{1} = 'Frobenius';
@@ -503,9 +516,12 @@ function test_matrix_matrix_CP(testCase)
     init_options.nvecs = 0;
     init_options.distr = distr_data;
     init_options.normalize = 1;
-    Z.object{1} = tensor(rand(50,60,40));
-    Z.object{2} = tensor(rand(50,70));
-    Z.object{3} = tensor(rand(60,80));
+    
+    [X, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',Z.loss_function); %create data
+
+    for p=1:P
+        Z.object{p} = X{p};
+    end
 
     cmtf.utils.init_coupled_AOADMM_CMTF(Z,'init_options', init_options);
 end
