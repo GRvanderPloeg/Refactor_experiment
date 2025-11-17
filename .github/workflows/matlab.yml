@@ -37,11 +37,13 @@ jobs:
         uses: matlab-actions/run-tests@v2
         with:
           source-folder: .; external
-          test-results-junit: test-results/results.xml
-          code-coverage-cobertura: code-coverage/coverage.xml
-        # If you are not using a MATLAB project, add your source code to the path using the source-folder input.
-        # with:
-        #   source-folder: myfolderA; myfolderB
+          code-coverage-cobertura: coverage.xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       # Alternatively, run tasks from your buildfile.m.
       # - name: Run MATLAB build
