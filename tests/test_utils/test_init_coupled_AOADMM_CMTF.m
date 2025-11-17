@@ -53,6 +53,7 @@ end
 function test_CP(testCase)
     rng(0,'twister');
 
+    P = 1;
     model{1} = 'CP';
     sz     = {60,50,70};
     modes  = {[1 2 3]};
@@ -100,6 +101,7 @@ end
 function test_regular_PAR2(testCase)
     rng(0,'twister');
 
+    P = 1;
     model{1} = 'PAR2';
     sz     = {40,120*ones(1,60),60};
     modes  = {[1 2 3]};
@@ -147,6 +149,7 @@ end
 function test_irregular_PAR2(testCase)
     rng(0,'twister');
 
+    P = 1;
     model{1} = 'PAR2';
     sz     = {40,[61:1:120],60};
     modes  = {[1 2 3]};
@@ -194,6 +197,7 @@ end
 function test_matrix_CP(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'CP';
     sz     = {20,30, 20,30,20};
@@ -243,6 +247,7 @@ end
 function test_CP_CP(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'CP';
     sz     = {20,30,40, 20,30,20};
@@ -293,6 +298,7 @@ end
 function test_matrix_PAR2(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'PAR2';
     sz     = {40,60, 40,120*ones(1,50),50};
@@ -343,6 +349,7 @@ end
 function test_CP_PAR2(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'PAR2';
     sz     = {20,30,40, 20,30*ones(1,20),20};
@@ -393,6 +400,7 @@ end
 function test_matrix_CP_partialcoupling(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'CP';
     sz     = {50,30,40,50,70};
@@ -444,6 +452,7 @@ end
 function test_CP_CP_doublesamplingrate(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'CP';
     sz     = {50,30,40,100,70,80};
@@ -499,6 +508,7 @@ end
 function test_matrix_matrix_CP(testCase)
     rng(0,'twister');
 
+    P = 3;
     model{1} = 'CP';
     model{2} = 'CP';
     model{3} = 'CP';
@@ -552,6 +562,7 @@ end
 function test_matrix_CP_Poisson(testCase)
     rng(0,'twister');
 
+    P = 2;
     model{1} = 'CP';
     model{2} = 'CP';
     sz     = {50,30,40,50,70};
