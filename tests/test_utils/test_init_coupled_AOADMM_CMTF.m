@@ -5,18 +5,15 @@ end
 function test_matrix(testCase)
     rng(0,'twister');
 
-    P = 1;
     model{1} = 'CP';
     sz     = {60,50};
     modes  = {[1 2]};
     lambdas_data= {[1 1 1]};
-    noise = 0.8;
 
     coupling.lin_coupled_modes = [0 0];
     coupling.coupling_type = [];
     coupling.coupl_trafo_matrices = cell(2,1);
-    
-    normalize_columns = 0;
+
     distr_data = {@(x,y) randn(x,y), @(x,y) randn(x,y)};
 
     loss_function{1} = 'Frobenius';
@@ -35,17 +32,12 @@ function test_matrix(testCase)
     Z.constrained_modes = constrained_modes;
     Z.constraints = constraints;
     Z.weights = weights;
+    Z.object{1} = tensor(rand(60, 50));
 
     init_options.lambdas_init = lambdas_data;
     init_options.nvecs = 0;
     init_options.distr = distr_data;
     init_options.normalize = 1;
-    
-    [X, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',Z.loss_function); %create data
-
-    for p=1:P
-        Z.object{p} = X{p};
-    end
 
     cmtf.utils.init_coupled_AOADMM_CMTF(Z,'init_options', init_options);
 end
