@@ -31,6 +31,12 @@ jobs:
           # See https://github.com/matlab-actions/setup-matlab/#set-up-matlab
           # products: Simulink Deep_Learning_Toolbox
 
+      # Set up dependencies
+      - name: Set up dependencies
+        uses: matlab-actions/run-command@v2
+        with:
+          command: run setup.m;
+
       # Run tests authored using the MATLAB unit testing framework or Simulink Test.
       - name: Run MATLAB tests
         uses: matlab-actions/run-tests@v2
