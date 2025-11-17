@@ -2,6 +2,90 @@ function tests = test_create_coupled_data
     tests = functiontests(localfunctions);
 end
 
+function test_matrix(testCase)
+    rng(0,'twister');
+
+    model{1} = 'CP';
+    sz     = {60,50};
+    modes  = {[1 2]};
+    lambdas_data= {[1 1 1]};
+    noise = 0.8;
+
+    coupling.lin_coupled_modes = [0 0];
+    coupling.coupling_type = [];
+    coupling.coupl_trafo_matrices = cell(2,1);
+    
+    normalize_columns = 0;
+    distr_data = {@(x,y) randn(x,y), @(x,y) randn(x,y)};
+
+    loss_function{1} = 'Frobenius';
+
+    [~, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',loss_function); %create data
+end
+
+function test_CP(testCase)
+    rng(0,'twister');
+
+    model{1} = 'CP';
+    sz     = {60,50,70};
+    modes  = {[1 2 3]};
+    lambdas_data= {[1 1 1]};
+    noise = 0.8;
+
+    coupling.lin_coupled_modes = [0 0 0];
+    coupling.coupling_type = [];
+    coupling.coupl_trafo_matrices = cell(3,1);
+    
+    normalize_columns = 0;
+    distr_data = {@(x,y) randn(x,y), @(x,y) randn(x,y),@(x,y) randn(x,y)};
+
+    loss_function{1} = 'Frobenius';
+
+    [~, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',loss_function); %create data
+end
+
+function test_regular_PAR2(testCase)
+    rng(0,'twister');
+
+    model{1} = 'PAR2';
+    sz     = {40,120*ones(1,60),60};
+    modes  = {[1 2 3]};
+    lambdas_data= {[1 1 1]};
+    noise = 0.2;
+
+    coupling.lin_coupled_modes = [0 0 0];
+    coupling.coupling_type = [];
+    coupling.coupl_trafo_matrices = cell(3,1);
+    
+    normalize_columns = 0;
+    distr_data = {@(x,y) rand(x,y), @(x,y) rand(x,y),@(x,y) rand(x,y)+0.1};
+
+    loss_function{1} = 'Frobenius';
+
+    [~, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',loss_function); %create data
+end
+
+function test_irregular_PAR2(testCase)
+    rng(0,'twister');
+
+    model{1} = 'PAR2';
+    sz     = {40,[61:1:120],60};
+    modes  = {[1 2 3]};
+    lambdas_data= {[1 1 1]};
+    noise = 0.2;
+
+    coupling.lin_coupled_modes = [0 0 0];
+    coupling.coupling_type = [];
+    coupling.coupl_trafo_matrices = cell(3,1);
+    
+    normalize_columns = 0;
+    distr_data = {@(x,y) randn(x,y), @(x,y) randn(x,y),@(x,y) rand(x,y)+0.1};
+
+    loss_function{1} = 'Frobenius';
+
+    [~, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',loss_function); %create data
+end
+
 function test_matrix_CP(testCase)
     rng(0,'twister');
 
@@ -119,27 +203,6 @@ function test_matrix_CP_partialcoupling(testCase)
     [~, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',loss_function); %create data
 end
 
-function test_irregular_PAR2(testCase)
-    rng(0,'twister');
-
-    model{1} = 'PAR2';
-    sz     = {40,[61:1:120],60};
-    modes  = {[1 2 3], [4 5]};
-    lambdas_data= {[1 1 1]};
-    noise = 0.2;
-
-    coupling.lin_coupled_modes = [0 0 0];
-    coupling.coupling_type = [];
-    coupling.coupl_trafo_matrices = cell(3,1);
-    
-    normalize_columns = 0;
-    distr_data = {@(x,y) randn(x,y), @(x,y) randn(x,y),@(x,y) rand(x,y)+0.1};
-
-    loss_function{1} = 'Frobenius';
-
-    [~, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',loss_function); %create data
-end
-
 function test_CP_CP_doublesamplingrate(testCase)
     rng(0,'twister');
 
@@ -189,6 +252,32 @@ function test_matrix_matrix_CP(testCase)
     loss_function{1} = 'Frobenius';
     loss_function{2} = 'Frobenius';
     loss_function{3} = 'Frobenius';
+
+    [~, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',loss_function); %create data
+end
+
+function test_matrix_CP_Poisson(testCase)
+    rng(0,'twister');
+
+    model{1} = 'CP';
+    model{2} = 'CP';
+    sz     = {50,30,40,50,70};
+    modes  = {[1 2 3], [4 5]};
+    lambdas_data= {[1 1 1], [1 1 1]};
+    noise = 0.2;
+    shape = 1;
+    scale = 1;
+
+    coupling.lin_coupled_modes = [1 0 0 1 0];
+    coupling.coupling_type = 0;
+    coupling.coupl_trafo_matrices = cell(5,1);
+    
+    normalize_columns = 0;
+    distr_data = {@(x,y) gamrnd(shape,scale,x,y),@(x,y) gamrnd(shape,scale,x,y),@(x,y) gamrnd(shape,scale,x,y),@(x,y) gamrnd(shape,scale,x,y),@(x,y) gamrnd(shape,scale,x,y)};
+
+
+    loss_function{1} = 'KL';
+    loss_function{2} = 'KL';
 
     [~, ~, ~,~] = cmtf.utils.create_coupled_data('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',loss_function); %create data
 end
