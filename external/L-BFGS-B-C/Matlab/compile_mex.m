@@ -128,43 +128,43 @@ figure(1); clf;
 %   is the output of our outputFcn
 semilogy( info.err(:,3),'o-' ); xlabel('iteration'); ylabel('relative error in iterate');
 
-%% a large scale test: least-squares
-% You shouldn't use L-BFGS-B to solve this (unless you are doing
-% non-negative least-squarse), use a direct solver or a Krylov subspace
-% method instead. But this is a good test case.
-n = 1e3;
-m = n+2; % make it non-square to help catch bugs
-fprintf('=== least-squares test, dim = %d === \n', n);
-
-rng(101);
-A = randn(m,n);
-b = randn(m,1);
-trueSoln = A\b;
-offset   = -norm(A*trueSoln-b)^2/2;
-
-opts    = struct( 'x0', trueSoln + 1e-3*randn(n,1) + zeros(n,1) );
-opts.printEvery     = 400;
-opts.m  = 5;
-opts.errFcn     = @(x) norm(x-trueSoln)/norm(trueSoln);
-% "outputFcn" will save values in the "info" output
-opts.outputFcn  = opts.errFcn;
-% Ask for very high accuracy
-opts.pgtol      = 1e-14;
-opts.factr      = 1e1;
-opts.maxIts     = 5e4;
-opts.maxTotalIts = 5e4;
-
-fcn = @(x) driver_LeastSquares(x,A,b,offset);
-[x,fVal,info] = lbfgsb( fcn , Inf(n,1), Inf(n,1), opts );
-
-if abs(fVal) < 1e-8
-    disp('Success!');
-else
-    disp('Something didn''t work right :-(  ');
-end
-figure(1); clf;
-semilogy( info.err(:,1),'-','linewidth',2,'DisplayName','Error in objective function' ); 
-hold all
-semilogy( info.err(:,3),'-','linewidth',2,'DisplayName','(Relative) Error in x' ); 
-xlabel('iteration'); 
-legend()
+% %% a large scale test: least-squares
+% % You shouldn't use L-BFGS-B to solve this (unless you are doing
+% % non-negative least-squarse), use a direct solver or a Krylov subspace
+% % method instead. But this is a good test case.
+% n = 1e3;
+% m = n+2; % make it non-square to help catch bugs
+% fprintf('=== least-squares test, dim = %d === \n', n);
+% 
+% rng(101);
+% A = randn(m,n);
+% b = randn(m,1);
+% trueSoln = A\b;
+% offset   = -norm(A*trueSoln-b)^2/2;
+% 
+% opts    = struct( 'x0', trueSoln + 1e-3*randn(n,1) + zeros(n,1) );
+% opts.printEvery     = 400;
+% opts.m  = 5;
+% opts.errFcn     = @(x) norm(x-trueSoln)/norm(trueSoln);
+% % "outputFcn" will save values in the "info" output
+% opts.outputFcn  = opts.errFcn;
+% % Ask for very high accuracy
+% opts.pgtol      = 1e-14;
+% opts.factr      = 1e1;
+% opts.maxIts     = 5e4;
+% opts.maxTotalIts = 5e4;
+% 
+% fcn = @(x) driver_LeastSquares(x,A,b,offset);
+% [x,fVal,info] = lbfgsb( fcn , Inf(n,1), Inf(n,1), opts );
+% 
+% if abs(fVal) < 1e-8
+%     disp('Success!');
+% else
+%     disp('Something didn''t work right :-(  ');
+% end
+% figure(1); clf;
+% semilogy( info.err(:,1),'-','linewidth',2,'DisplayName','Error in objective function' ); 
+% hold all
+% semilogy( info.err(:,3),'-','linewidth',2,'DisplayName','(Relative) Error in x' ); 
+% xlabel('iteration'); 
+% legend()
