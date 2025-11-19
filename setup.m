@@ -1,5 +1,6 @@
 function setup()
 %SETUP  Add CMTF Toolbox and dependencies to MATLAB path.
+% TODO: recognize if compile_mex.m needs to be run.
 
 root = fileparts(mfilename('fullpath'));
 
