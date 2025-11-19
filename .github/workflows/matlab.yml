@@ -35,7 +35,7 @@ jobs:
       - name: Install LBFGSB
         uses: matlab-actions/run-command@v2
         with:
-          command: cd external/L-BFGS-B-C/Matlab; compile_mex.m; cd ../../..;
+          command: cd external/L-BFGS-B-C/Matlab; compile_mex; cd ../../..;
 
       # Run tests authored using the MATLAB unit testing framework or Simulink Test.
       - name: Run MATLAB tests
