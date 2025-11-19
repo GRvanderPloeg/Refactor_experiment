@@ -56,7 +56,7 @@ weights = [1/2 1/2]; %weight w_i for each data set
 
 %% set lbfgsb options (only needed for loss functions other than Frobenius)
 lbfgsb_options.m = 5;
-lbfgsb_options.printEvery = Inf;
+lbfgsb_options.printEvery = -1;
 lbfgsb_options.maxIts = 100;
 lbfgsb_options.maxTotalIts = 1000;
 lbfgsb_options.factr = 1e-6/eps;
