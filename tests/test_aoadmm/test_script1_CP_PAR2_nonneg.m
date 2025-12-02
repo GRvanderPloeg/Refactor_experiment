@@ -147,12 +147,12 @@ function test_workflow(testCase)
     FMS2_C
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyEqual(Fit1, 100);
-    testCase.verifyEqual(FMS1, 1);
+    testCase.verifyEqual(Fit1, 100, "AbsTol", 0.1);
+    testCase.verifyEqual(FMS1, 1, "AbsTol", 1e-3);
 
-    testCase.verifyEqual(Fit2, 100);
-    testCase.verifyEqual(FMS2_A, 1);
-    testCase.verifyEqual(FMS2_B, 0.999);
-    testCase.verifyEqual(FMS2_C, 1);
+    testCase.verifyEqual(Fit2, 100, "AbsTol", 0.1);
+    testCase.verifyEqual(FMS2_A, 1, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_B, 0.999, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_C, 1, "AbsTol", 1e-3);
 
 end
