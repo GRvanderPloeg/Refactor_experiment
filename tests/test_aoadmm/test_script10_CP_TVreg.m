@@ -120,12 +120,8 @@ function test_workflow(testCase)
     % FMS 
     true_ktensor{1} =(ktensor(lambdas_data{1}'./normZ{1},Atrue(modes{1})));
     FMS1 = score(Zhat{1},true_ktensor{1},'lambda_penalty',false);  
-    
-    % Report output for logs
-    Fit1
-    FMS1
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyGreaterThanOrEqual(Fit1, 60);
-    testCase.verifyGreaterThanOrEqual(FMS1, 0.99);
+    testCase.verifyGreaterThanOrEqual(Fit1, 61.043, "AbsTol", 1e-3);
+    testCase.verifyGreaterThanOrEqual(FMS1, 0.999, "AbsTol", 1e-3);
 end

@@ -142,22 +142,14 @@ function test_workflow(testCase)
         largeB = [largeB;Atrue{5}{k}];
     end
     FMS2_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);
-    
-    % Report output for logs
-    Fit1
-    Fit2
-    FMS1
-    FMS2_A
-    FMS2_B
-    FMS2_C
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyGreaterThanOrEqual(Fit1, 75);
-    testCase.verifyGreaterThanOrEqual(FMS1, 0.99);
+    testCase.verifyEqual(Fit1, 80.028, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS1, 0.998, "AbsTol", 1e-3);
 
-    testCase.verifyGreaterThanOrEqual(Fit2, 75);
-    testCase.verifyGreaterThanOrEqual(FMS2_A, 0.99);
-    testCase.verifyGreaterThanOrEqual(FMS2_B, 0.90);
-    testCase.verifyGreaterThanOrEqual(FMS2_C, 0.95);
+    testCase.verifyEqual(Fit2, 79.272, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_A, 0.9987, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_B, 0.9403, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_C, 0.9966, "AbsTol", 1e-3);
 
 end

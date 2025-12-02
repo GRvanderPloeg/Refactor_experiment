@@ -134,23 +134,15 @@ function test_workflow(testCase)
     FMS2 = score(Zhat{2},true_ktensor{2});
     true_ktensor{3} =(ktensor(lambdas_data{3}'./normZ{3},Atrue(modes{3})));
     FMS3 = score(Zhat{3},true_ktensor{3});    
-    
-    % Report output for logs
-    Fit1
-    Fit2
-    Fit3
-    FMS1
-    FMS2
-    FMS3
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyGreaterThanOrEqual(Fit1, 95);
-    testCase.verifyGreaterThanOrEqual(FMS1, 0.99);
+    testCase.verifyGreaterThanOrEqual(Fit1, 96.128, "AbsTol", 1e-3);
+    testCase.verifyGreaterThanOrEqual(FMS1, 0.998, "AbsTol", 1e-3);
 
-    testCase.verifyGreaterThanOrEqual(Fit2, 95);
-    testCase.verifyGreaterThanOrEqual(FMS2, 0.95);
+    testCase.verifyGreaterThanOrEqual(Fit2, 96.449, "AbsTol", 1e-3);
+    testCase.verifyGreaterThanOrEqual(FMS2, 0.988, "AbsTol", 1e-3);
 
-    testCase.verifyGreaterThanOrEqual(Fit3, 95);
-    testCase.verifyGreaterThanOrEqual(FMS3, 0.95);
+    testCase.verifyGreaterThanOrEqual(Fit3, 96.3952, "AbsTol", 1e-3);
+    testCase.verifyGreaterThanOrEqual(FMS3, 0.9808, "AbsTol", 1e-3);
 end
 
