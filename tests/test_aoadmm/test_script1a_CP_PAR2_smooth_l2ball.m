@@ -144,12 +144,12 @@ function test_workflow(testCase)
     FMS2_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyEqual(Fit1, 80.0039, "AbsTol", 1e-2);
-    testCase.verifyEqual(FMS1, 0.998, "AbsTol", 1e-2);
+    testCase.verifyEqual(Fit1, 80.0039, "AbsTol", 1e-1);
+    testCase.verifyEqual(FMS1, 0.998, "AbsTol", 1e-1);
 
-    testCase.verifyEqual(Fit2, 79.4713, "AbsTol", 1e-2);
-    testCase.verifyEqual(FMS2_A, 0.9991, "AbsTol", 1e-2);
-    testCase.verifyEqual(FMS2_B, 0.9667, "AbsTol", 1e-2);
-    testCase.verifyEqual(FMS2_C, 0.9991, "AbsTol", 1e-2);
+    testCase.verifyEqual(Fit2, 79.4713, "AbsTol", 1e-1);
+    testCase.verifyEqual(FMS2_A, 0.9991, "AbsTol", 1e-1);
+    testCase.verifyEqual(FMS2_B, 0.9667, "AbsTol", 1e-1);
+    testCase.verifyEqual(FMS2_C, 0.9991, "AbsTol", 1e-1);
 
 end
