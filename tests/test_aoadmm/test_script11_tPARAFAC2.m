@@ -10,8 +10,10 @@ end
 
 function test_workflow(testCase)
 
+    % Control randomness
+    rng(123, 'twister');
+
     % load data and ground truth factors
-    
     A = load("gnd_factors.mat", "A").A;
     B_double = load("gnd_factors.mat", "B").B;
     C = load("gnd_factors.mat", "C").C;

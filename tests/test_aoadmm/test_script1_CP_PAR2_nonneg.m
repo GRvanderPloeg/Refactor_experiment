@@ -12,6 +12,9 @@ end
 
 function test_workflow(testCase)
 
+    % Control randomness
+    rng(123, 'twister');
+    
     % specify synthetic data
     sz     = {20,30,40, 20,30*ones(1,20),20}; %size of each mode
     P      = 2; %number of tensors
