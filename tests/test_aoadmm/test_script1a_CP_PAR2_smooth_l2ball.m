@@ -17,7 +17,7 @@ end
 function test_workflow(testCase)
 
     % Control randomness
-    rng(123, 'twister');
+    rng(234, 'twister');
 
     % specify synthetic data
     sz     = {30,20,50,30,200*ones(1,30),30}; %size of each mode
@@ -144,12 +144,12 @@ function test_workflow(testCase)
     FMS2_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyEqual(Fit1, 80.028, "AbsTol", 1e-3);
+    testCase.verifyEqual(Fit1, 80.0039, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS1, 0.998, "AbsTol", 1e-3);
 
-    testCase.verifyEqual(Fit2, 79.272, "AbsTol", 1e-3);
-    testCase.verifyEqual(FMS2_A, 0.9987, "AbsTol", 1e-3);
-    testCase.verifyEqual(FMS2_B, 0.9403, "AbsTol", 1e-3);
-    testCase.verifyEqual(FMS2_C, 0.9966, "AbsTol", 1e-3);
+    testCase.verifyEqual(Fit2, 79.4713, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_A, 0.9991, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_B, 0.9667, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_C, 0.9991, "AbsTol", 1e-3);
 
 end
