@@ -131,6 +131,4 @@ function test_workflow(testCase)
     testCase.verifyGreaterThanOrEqual(FMS2_B, 0.99);
     testCase.verifyGreaterThanOrEqual(FMS2_C, 0.99);
 
-    %testCase.verifyTrue(FMS1 >= 0.99 & FMS2_A >= 0.99 & FMS2_B >= 0.99 & FMS2_C >= 0.99);
-
 end

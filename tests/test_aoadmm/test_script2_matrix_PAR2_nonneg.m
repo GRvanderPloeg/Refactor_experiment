@@ -125,6 +125,9 @@ function test_workflow(testCase)
     end
     FMS2_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);
         
-    % See expected output
-    testCase.verifyTrue(FMS1 >= 0.99 & FMS2_A >= 0.95 & FMS2_B >= 0.90 & FMS2_C >= 0.95);
+    % Test expected output (see ~/examples/expectedOutput)
+    testCase.verifyGreaterThanOrEqual(FMS1, 0.99);
+    testCase.verifyGreaterThanOrEqual(FMS2_A, 0.95);
+    testCase.verifyGreaterThanOrEqual(FMS2_B, 0.90);
+    testCase.verifyGreaterThanOrEqual(FMS2_C, 0.95);
 end

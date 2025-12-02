@@ -115,6 +115,6 @@ function test_workflow(testCase)
     true_ktensor{1} =(ktensor(lambdas_data{1}'./normZ{1},Atrue(modes{1})));
     FMS1 = score(Zhat{1},true_ktensor{1},'lambda_penalty',false);  
     
-    % See expected output
-    testCase.verifyTrue(FMS1 >= 0.99);
+    % Test expected output (see ~/examples/expectedOutput)
+    testCase.verifyGreaterThanOrEqual(FMS1, 0.99);
 end
