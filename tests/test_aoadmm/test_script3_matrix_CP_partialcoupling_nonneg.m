@@ -129,14 +129,27 @@ function test_workflow(testCase)
     % run algorithm
     [Zhat,Fac,FacInit,out] = cmtf.aoadmm.cmtf_AOADMM(Z,'alg_options',options,'init',init_fac,'init_options',init_options); 
     
+    % FIT
+    Fit1 = 100*(1-norm(Z.object{1}-full(Zhat{1}))^2/norm(Z.object{1})^2);
+    Fit2 = 100*(1-norm(Z.object{2}-full(Zhat{2}))^2/norm(Z.object{2})^2);
+
     % FMS 
     true_ktensor{1} =(ktensor(lambdas_data{1}'./normZ{1},Atrue(modes{1})));
     FMS1 = score(Zhat{1},true_ktensor{1});
     true_ktensor{2} =(ktensor(lambdas_data{2}'./normZ{2},Atrue(modes{2})));
     FMS2 = score(Zhat{2},true_ktensor{2});
 
+    % Report output for logs
+    Fit1
+    Fit2
+    FMS1
+    FMS2
+
     % Test expected output (see ~/examples/expectedOutput)
+    testCase.verifyGreaterThanOrEqual(Fit1, 95);
     testCase.verifyGreaterThanOrEqual(FMS1, 0.95);
+
+    testCase.verifyGreaterThanOrEqual(Fit2, 95);
     testCase.verifyGreaterThanOrEqual(FMS2, 0.95);
     
 end

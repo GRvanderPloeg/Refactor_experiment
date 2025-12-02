@@ -110,7 +110,17 @@ function test_workflow(testCase)
     
     % run algorithm
     [Zhat,Fac,FacInit,out] = cmtf.aoadmm.cmtf_AOADMM(Z,'alg_options',options,'init',init_fac,'init_options',init_options); 
-      
+
+    % FIT
+    Fit1 = 100*(1-norm(Z.object{1}-full(Zhat{1}))^2/norm(Z.object{1})^2);
+    Fit2 = 0;
+    Fitx = 0;
+    for k=1:length(sz{5})
+        Fit2 = Fit2 + norm(Z.object{2}{k}-Zhat{2}.A*diag(Zhat{2}.C(k,:))*Zhat{2}.Bk{k}','fro')^2;
+        Fitx    = Fitx    + norm(Z.object{2}{k},'fro')^2;
+    end
+    Fit2 = 100*(1-Fit2/Fitx);
+
     % FMS 
     true_ktensor{1} =(ktensor(lambdas_data{1}'./normZ{1},Atrue(modes{1})));
     FMS1 = score(Zhat{1},true_ktensor{1},'lambda_penalty',false);
@@ -125,8 +135,19 @@ function test_workflow(testCase)
     end
     FMS2_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);
 
+    % Report output for logs
+    Fit1
+    Fit2
+    FMS1
+    FMS2_A
+    FMS2_B
+    FMS2_C
+
     % Test expected output (see ~/examples/expectedOutput)
+    testCase.verifyGreaterThanOrEqual(Fit1, 75);
     testCase.verifyGreaterThanOrEqual(FMS1, 0.99);
+
+    testCase.verifyGreaterThanOrEqual(Fit2, 75);
     testCase.verifyGreaterThanOrEqual(FMS2_A, 0.99);
     testCase.verifyGreaterThanOrEqual(FMS2_B, 0.99);
     testCase.verifyGreaterThanOrEqual(FMS2_C, 0.99);
