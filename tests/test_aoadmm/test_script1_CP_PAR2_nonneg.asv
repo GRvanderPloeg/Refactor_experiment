@@ -110,6 +110,16 @@ function test_workflow(testCase)
     
     % run algorithm
     [Zhat,Fac,FacInit,out] = cmtf.aoadmm.cmtf_AOADMM(Z,'alg_options',options,'init',init_fac,'init_options',init_options); 
+
+    % FIT
+    Fit1 = 100*(1-norm(Z.object{1}-full(Zhat{1}))^2/norm(Z.object{1})^2);
+    Fit2 = 0;
+    Fitx = 0;
+    for k=1:length(sz{5})
+        Fit2 = Fit2 + norm(Z.object{2}{k}-Zhat{2}.A*diag(Zhat{2}.C(k,:))*Zhat{2}.Bk{k}','fro')^2;
+        Fitx    = Fitx    + norm(Z.object{2}{k},'fro')^2;
+    end
+    Fit2 = 100*(1-Fit2/Fitx);
       
     % FMS 
     true_ktensor{1} =(ktensor(lambdas_data{1}'./normZ{1},Atrue(modes{1})));
