@@ -111,11 +111,10 @@ function test_workflow(testCase)
     %% run algorithm
     [Zhat,Fac,FacInit,out] = cmtf.aoadmm.cmtf_AOADMM(Z,'alg_options',options,'init',init_fac,'init_options',init_options); 
 
-    % FIT
-    Fit1 = 100*(1-norm(Z.object{1}-full(Zhat{1}))^2/norm(Z.object{1})^2);
     % FMS 
     true_ktensor{1} =(ktensor(lambdas_data{1}'./normZ{1},Atrue(modes{1})));
     FMS1 = score(Zhat{1},true_ktensor{1},'lambda_penalty',false);  
     
-
+    % See expected output
+    testCase.verifyTrue(FMS1 >= 0.99);
 end

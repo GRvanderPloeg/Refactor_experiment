@@ -110,18 +110,8 @@ function test_workflow(testCase)
     % run algorithm
 
     [Zhat,Fac,FacInit,out] = cmtf.aoadmm.cmtf_AOADMM(Z,'alg_options',options,'init',init_fac,'init_options',init_options); 
-
-    % FIT
-    Fit1 = 0;
-    Fitx = 0;
-    for k=1:length(sz{2})
-        Fit1 = Fit1 + norm(Z.object{1}{k}-Zhat{1}.A*diag(Zhat{1}.C(k,:))*Zhat{1}.Bk{k}','fro')^2;
-        Fitx    = Fitx    + norm(Z.object{1}{k},'fro')^2;
-    end
-    Fit1 = 100*(1-Fit1/Fitx);
       
     % FMS 
-    
     FMS_A = score(ktensor(ones(3,1),Zhat{1}.A),ktensor(ones(3,1),Atrue{1}),'lambda_penalty',false);
     FMS_C = score(ktensor(ones(3,1),Zhat{1}.C),ktensor(ones(3,1),Atrue{3}),'lambda_penalty',false);
     SollargeB = [];
@@ -132,6 +122,6 @@ function test_workflow(testCase)
     end
     FMS_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);
     
-    
-    
+    % See expected output
+    testCase.verifyTrue(FMS_A >= 0.99 & FMS_B >= 0.95 & FMS_C >= 0.99);
 end
