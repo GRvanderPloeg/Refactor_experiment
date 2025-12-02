@@ -34,7 +34,7 @@ for m=1:length(Z.constraints)
     if Z.constrained_modes(m)
         if strcmp(Z.constraints{m}{1},'tPARAFAC2')
             if ~strcmp(Z.model{which_p(m)},'PAR2') || 2 ~= find(Z.modes{which_p(m)}==m)
-                error('The tPARAFAC2 constraint can only be impsed on the second mode of a PARAFAC2 model')
+                error('The tPARAFAC2 constraint can only be imposed on the second mode of a PARAFAC2 model')
             end
         end
     end
