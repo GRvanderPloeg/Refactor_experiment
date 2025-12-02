@@ -10,6 +10,7 @@
 close all
 clear all
 run ../setup.m
+rng(123, 'twister');
 
 %% specify synthetic data
 sz     = {20,30,40, 20,30*ones(1,20),20}; %size of each mode

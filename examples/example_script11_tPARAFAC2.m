@@ -7,6 +7,7 @@
 close all
 clear all
 run ../setup.m
+rng(123, 'twister');
 
 %% load data and ground truth factors
 
