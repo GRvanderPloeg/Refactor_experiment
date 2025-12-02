@@ -136,5 +136,5 @@ function test_workflow(testCase)
     FMS_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);   
     
     % See expected output
-    testCase.verifyTrue(FMS1 >= 0.99 & FMS2_A >= 0.99 & FMS2_B >= 0.99 & FMS2_C >= 0.99);
+    testCase.verifyTrue(FMS_A >= 0.99 & FMS_B >= 0.99 & FMS_C >= 0.99);
 end
