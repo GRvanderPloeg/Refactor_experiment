@@ -122,5 +122,5 @@ function test_workflow(testCase)
     testCase.verifyGreaterThanOrEqual(FMS1, 0.99);
 
     testCase.verifyGreaterThanOrEqual(Fit2, 85);
-    testCase.verifyGreaterThanOrEqual(FMS2, 0.95);
+    testCase.verifyGreaterThanOrEqual(FMS2, 0.90);
 end

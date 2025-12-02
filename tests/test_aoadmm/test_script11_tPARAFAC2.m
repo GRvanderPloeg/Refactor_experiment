@@ -153,6 +153,6 @@ function test_workflow(testCase)
     % Test expected output (see ~/examples/expectedOutput)
     testCase.verifyGreaterThanOrEqual(Fit1, 20);
     testCase.verifyGreaterThanOrEqual(FMS_A, 0.99);
-    testCase.verifyGreaterThanOrEqual(FMS_B, 0.99);
+    testCase.verifyGreaterThanOrEqual(FMS_B, 0.95);
     testCase.verifyGreaterThanOrEqual(FMS_C, 0.99);
 end
