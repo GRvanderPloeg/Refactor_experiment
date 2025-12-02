@@ -122,6 +122,6 @@ function test_workflow(testCase)
     FMS1 = score(Zhat{1},true_ktensor{1},'lambda_penalty',false);  
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyGreaterThanOrEqual(Fit1, 61.043, "AbsTol", 1e-3);
-    testCase.verifyGreaterThanOrEqual(FMS1, 0.999, "AbsTol", 1e-3);
+    testCase.verifyEqual(Fit1, 61.043, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS1, 0.999, "AbsTol", 1e-3);
 end

@@ -143,11 +143,11 @@ function test_workflow(testCase)
     FMS2 = score(Zhat{2},true_ktensor{2});
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyGreaterThanOrEqual(Fit1, 96.161, "AbsTol", 1e-3);
-    testCase.verifyGreaterThanOrEqual(FMS1, 0.998, "AbsTol", 1e-3);
+    testCase.verifyEqual(Fit1, 96.161, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS1, 0.998, "AbsTol", 1e-3);
 
-    testCase.verifyGreaterThanOrEqual(Fit2, 96.476, "AbsTol", 1e-3);
-    testCase.verifyGreaterThanOrEqual(FMS2, 0.978, "AbsTol", 1e-3);
+    testCase.verifyEqual(Fit2, 96.476, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2, 0.978, "AbsTol", 1e-3);
     
 end
     
