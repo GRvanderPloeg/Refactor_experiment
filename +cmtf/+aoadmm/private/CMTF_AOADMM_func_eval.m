@@ -52,7 +52,7 @@
                 fp(pp) = f_1 - 2* f_2 + f_3;
             else
                 for kk=1:length(Z.size{Z.modes{pp}(2)})
-                    fp(pp) = fp(pp) + norm(Z.object{pp}{kk}-G.fac{Z.modes{pp}(1)}*diag(G.fac{Z.modes{pp}(3)}(kk,:))*G.fac{Z.modes{pp}(2)}{kk}','fro')^2
+                    fp(pp) = fp(pp) + norm(Z.object{pp}{kk}-G.fac{Z.modes{pp}(1)}*diag(G.fac{Z.modes{pp}(3)}(kk,:))*G.fac{Z.modes{pp}(2)}{kk}','fro')^2;
                 end
             end
             fp(pp) = Z.weights(pp) *fp(pp);

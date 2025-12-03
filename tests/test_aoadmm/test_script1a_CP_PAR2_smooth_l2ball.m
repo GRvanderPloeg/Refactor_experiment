@@ -99,7 +99,9 @@ function test_workflow(testCase)
     
     % Create random initialization
     init_fac = cmtf.utils.init_coupled_AOADMM_CMTF(Z,'init_options', init_options);
-    
+    init_fac.fac{4}
+    init_fac.fac{5}
+    init_fac.fac{6}
     % set options 
     options.Display ='iter'; %  set to 'iter' or 'final' or 'no'
     options.DisplayIters = 10;
