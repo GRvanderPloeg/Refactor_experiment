@@ -185,7 +185,6 @@ for p = 1:P
         for k=1:size(C,1)
             normXk = norm(X{p}{k},'fro');
             Nk = randn(size(X{p}{k}));
-            Nk(1:10,1:10)
             normNk = norm(Nk,'fro');
             sigma(p,k) = nlevel*normXk/normNk;
             X{p}{k} = X{p}{k} + sigma(p,k)*Nk;
