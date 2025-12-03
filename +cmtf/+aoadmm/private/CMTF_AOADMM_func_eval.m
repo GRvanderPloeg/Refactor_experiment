@@ -1,12 +1,11 @@
-    function [f_tensors,f_couplings,f_constraints,f_PAR2_couplings] = CMTF_AOADMM_func_eval(ctx, G, G_transp_G, Znorm_const,last_mttkrp,last_had,last_m, fh)
+    function [f_tensors,f_couplings,f_constraints,f_PAR2_couplings] = CMTF_AOADMM_func_eval(Z, G, G_transp_G, Znorm_const,last_mttkrp,last_had,last_m, fh)
     % evaluates the 'residuals' of the objective function
     % ftensors = sum_i w_i ||T_i-[|C_i,1,C_i,2,C_i,3|]||_F^2 + g_i,d(C_i,d) (for all regularizations g_i,d)
     % f_couplings = sum_i ||C_i-Delta_i||_F^2
     % f_constraints = sum_i ||C_i-Z_i||_F^2
 
-    Z = ctx.Z;
-    P = ctx.meta.P;
-    nb_modes = ctx.meta.nb_modes;
+    P = numel(Z.object);
+    nb_modes = numel(Z.size);
 
     fp = zeros(P,1);
     for pp = 1:P

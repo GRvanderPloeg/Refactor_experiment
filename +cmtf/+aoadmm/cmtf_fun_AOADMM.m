@@ -27,19 +27,7 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
     last_had = cell(P,1); %for efficient function value computation
     out.innerIters = zeros(nb_modes,1);
 
-    % Prepare context
-    ctx.Z         = Z;
-    ctx.options   = options;
-    ctx.lscalar   = lscalar;
-    ctx.uscalar   = uscalar;
-    
-    ctx.meta.nb_modes = numel(Z.size);
-    ctx.meta.P        = numel(Z.object);
-    ctx.meta.isCP     = strcmp(Z.model,'CP');
-    ctx.meta.isPAR2   = strcmp(Z.model,'PAR2');
-    ctx.meta.isFrob   = strcmp(Z.loss_function,'Frobenius');
-
-    [f_tensors,f_couplings,f_constraints,f_PAR2_couplings] = CMTF_AOADMM_func_eval(ctx,G,G_transp_G,Znorm_const,[],[],[],fh);
+    [f_tensors,f_couplings,f_constraints,f_PAR2_couplings] = CMTF_AOADMM_func_eval(Z,G,G_transp_G,Znorm_const,[],[],[],fh);
     f_total = f_tensors+f_couplings+f_constraints + f_PAR2_couplings;
     func_val(1) = f_tensors;
     func_coupl(1) = f_couplings;
@@ -184,7 +172,7 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                                 else % mode is constrained, use ADMM
                                     B{m} = B{m}+ rho{m}/2*eye(size(B{m})); % for constraint
                                     L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition
-                                    [inner_iters,lbfgsb_iterations] = ADMM_constrained_only(Z,G,nb_modes,A{m},L{m},m,p,rho,options);
+                                    [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,A{m},L{m},m,p,rho,options);
                                 end
                             end
                             out.innerIters(m,iter)= inner_iters;
@@ -345,7 +333,7 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
        f_couplings_old = f_couplings;
        f_constraints_old = f_constraints;
        f_PAR2_couplings_old = f_PAR2_couplings;
-       [f_tensors,f_couplings,f_constraints,f_PAR2_couplings] = CMTF_AOADMM_func_eval(ctx,G,G_transp_G,Znorm_const,last_mttkrp,last_had,last_m,fh);
+       [f_tensors,f_couplings,f_constraints,f_PAR2_couplings] = CMTF_AOADMM_func_eval(Z,G,G_transp_G,Znorm_const,last_mttkrp,last_had,last_m,fh);
        f_total = f_tensors+f_couplings+f_constraints + f_PAR2_couplings;
        func_val(iter+1) = f_tensors;
        func_coupl(iter+1) = f_couplings;

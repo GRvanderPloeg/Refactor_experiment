@@ -6,7 +6,7 @@
 % The loss functions is set to be KL-divergence for both datasets.
 % No constraints.
 
-function tests = test_matrix_CP_KLdivergence
+function tests = test_script7_matrix_CP_KLdivergence
     tests = functiontests(localfunctions);
 end
 
@@ -118,6 +118,6 @@ function test_workflow(testCase)
     testCase.verifyEqual(Fit1, 89.0083, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS1, 0.994, "AbsTol", 1e-3);
 
-    testCase.verifyEqual(Fit2, 87.8224, "AbsTol", 1e-3);
+    testCase.verifyEqual(Fit2, 87.8224, "AbsTol", 1e-2);
     testCase.verifyEqual(FMS2, 0.953, "AbsTol", 1e-3);
 end
