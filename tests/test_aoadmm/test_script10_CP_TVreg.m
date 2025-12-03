@@ -8,7 +8,7 @@
 % denoising," IEEE Signal Processing Letters, vol. 20, no. 11, pp. 1054-1057, Nov. 2013.)
 % The code can be downloaded here: https://lcondat.github.io/software.html
 
-function tests = test_CP_TVreg
+function tests = test_script10_CP_TVreg
     tests = functiontests(localfunctions);
 end
 

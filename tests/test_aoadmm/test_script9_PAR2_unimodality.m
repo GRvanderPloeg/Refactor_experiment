@@ -7,7 +7,7 @@
 % algorithm converge, for this see the additional (optional) options set further down
 % in this example script.
 
-function tests = test_PAR2_unimodality
+function tests = test_script9_PAR2_unimodality
     tests = functiontests(localfunctions);
 end
 

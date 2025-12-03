@@ -4,7 +4,7 @@
 % Gaussian noise with level 0.2 and use Frobenius norm loss.  
 % All modes are constrained to be non-negative.
 
-function tests = test_regularPAR2_nonneg
+function tests = test_script8_regularPAR2_nonneg
     tests = functiontests(localfunctions);
 end
 

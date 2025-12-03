@@ -5,7 +5,7 @@
 % Gaussian noise with level 0.5 and use Frobenius norm loss. Coupling is in
 % modes 1 and 3. All modes are constrained to be non-negative.
 
-function tests = test_matrix_PAR2_nonneg
+function tests = test_script2_matrix_PAR2_nonneg
     tests = functiontests(localfunctions);
 end
 

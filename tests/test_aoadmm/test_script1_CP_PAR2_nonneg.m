@@ -6,7 +6,7 @@
 % norm loss is used for both datasets. All modes of PARAFAC2 and the first
 % mode of CP are constrained to be non-negative.
 
-function tests = test_CP_PAR2_nonneg
+function tests = test_script1_CP_PAR2_nonneg
     tests = functiontests(localfunctions);
 end
 

@@ -8,7 +8,7 @@
 % In the algorithm, modes 1 and 4 are coupled using coupling type 3b.
 % Non-negativity constraints are enforced for modes 1,4,5.
 
-function tests = test_matrix_CP_partialcoupling_nonneg
+function tests = test_script3_matrix_CP_partialcoupling_nonneg
     tests = functiontests(localfunctions);
 end
 

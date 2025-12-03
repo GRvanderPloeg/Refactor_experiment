@@ -10,7 +10,7 @@
 % The loss functions is set to be squared Frobenius norm.
 % Non-negativity constraints are enforced for modes 1,2,4,5,6 and 7.
 
-function tests = test_matrix_matrix_CP_nonneg
+function tests = test_script6_matrix_matrix_CP_nonneg
     tests = functiontests(localfunctions);
 end
 

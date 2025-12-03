@@ -11,7 +11,7 @@
 % Some Gaussian noise is added to the datasets.
 % The loss functions is set to be squared Frobenius norm.
 
-function tests = test_CP_CP_doublesamplingrate_simplex
+function tests = test_script5_CP_CP_doublesamplingrate_simplex
     tests = functiontests(localfunctions);
 end
 

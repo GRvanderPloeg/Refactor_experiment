@@ -4,7 +4,7 @@
 % Gaussian noise with level 0.2 and use Frobenius norm loss.
 %%
 
-function tests = test_irregularPAR2
+function tests = test_script4_irregularPAR2
     tests = functiontests(localfunctions);
 end
 

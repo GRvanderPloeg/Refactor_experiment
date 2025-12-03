@@ -10,7 +10,7 @@
 % are constrained to be within the unit l2-ball. Additionally, mode 6 is
 % constrainted to be non-negative, to avoid the sign ambiguity of PARAFAC2.
 
-function tests = test_CP_PAR2_smooth_l2ball
+function tests = test_script1a_CP_PAR2_smooth_l2ball
     tests = functiontests(localfunctions);
 end
 

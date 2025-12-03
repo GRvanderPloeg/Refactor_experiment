@@ -4,7 +4,7 @@
 % The tPARAFAC2 cosntraint (temporal smoothness of Bk's across k in a PARAFAC2 model (f({B_k}_{k=1}^K = eta*sum_{k=1}^K ||B_k-B_{k-1}||_F^2)) is applied to Bk's,
 % non-negativity on C and ridge regularization on modes A and C.
 
-function tests = test_tPARAFAC2
+function tests = test_script11_tPARAFAC2
     tests = functiontests(localfunctions);
 end
 
