@@ -58,7 +58,7 @@
             fp(pp) = Z.weights(pp) *fp(pp);
         end
     end 
-    f_tensors = sum(fp);
+    f_tensors = sum(fp)
     
     if isfield(Z,'reg_func')
         for n = 1:nb_modes 
@@ -77,6 +77,7 @@
             end
         end
     end
+    f_tensors
     
     if isfield(Z,'ridge')
          for n = 1:nb_modes
@@ -89,6 +90,8 @@
              end
          end
     end
+    f_tensors
+    P
 
     % residuals for coupling
     nb_couplings = max(Z.coupling.lin_coupled_modes);
