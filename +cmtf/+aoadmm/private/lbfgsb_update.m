@@ -1,5 +1,6 @@
 function [lbfgsb_iterations,G] = lbfgsb_update(Z,G,lscalar,uscalar,fh,gh,p,m,constrained,coupling_type,rho,options)
     % updates G.fac{m} using lbfgsb
+    lbfgsb_options = options.lbfgsb_options;
     ll = lscalar{p}*ones(numel(G.fac{m}),1);
     uu = uscalar{p}*ones(numel(G.fac{m}),1);
     lbfgsb_loss_func_inner = @(x) compute_gen_f_g(Z,G,x,p,m,fh{p},gh{p},constrained,coupling_type,rho,options);
