@@ -78,10 +78,7 @@ function test_workflow(testCase)
     
     % create data
     [X, Atrue, Deltatrue,sigmatrue] = cmtf.utils.create_coupled_data_smoothBks('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',Z.loss_function); %create data
-    norm(X{1})
-    for p=1:30
-        norm(X{2}{p})
-    end
+    
     % create Z.object and normalize
     normZ=cell(P,1);
     for p=1:P
@@ -105,7 +102,7 @@ function test_workflow(testCase)
     init_fac = cmtf.utils.init_coupled_AOADMM_CMTF(Z,'init_options', init_options);
 
     % set options 
-    options.Display ='iter'; %  set to 'iter' or 'final' or 'no'
+    options.Display ='no'; %  set to 'iter' or 'final' or 'no'
     options.DisplayIters = 10;
     options.MaxOuterIters = 4000;
     options.MaxInnerIters = 5;
