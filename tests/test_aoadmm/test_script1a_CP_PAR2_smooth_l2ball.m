@@ -146,13 +146,13 @@ function test_workflow(testCase)
     % Test expected output (see ~/examples/expectedOutput)
     % Due to a bug in platform-dependent generation of Bks,
     % these tests are loosened.
-    testCase.verifyEqual(Fit1, 80.0039, "AbsTol", 1e-1);
-    testCase.verifyEqual(FMS1, 0.998, "AbsTol", 1e-1);
+    testCase.verifyEqual(Fit1, 79.9874, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS1, 0.9979, "AbsTol", 1e-3);
 
-    testCase.verifyEqual(Fit2, 79.4713, "AbsTol", 1e-1);
-    testCase.verifyEqual(FMS2_A, 0.9991, "AbsTol", 1e-1);
-    testCase.verifyEqual(FMS2_B, 0.9667, "AbsTol", 1e-1);
-    testCase.verifyEqual(FMS2_C, 0.9991, "AbsTol", 1e-1);
-    testCase.verifyEqual(out.OuterIterations, 75);
+    testCase.verifyEqual(Fit2, 79.3005, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_A, 0.9989, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_B, 0.9607, "AbsTol", 1e-3);
+    testCase.verifyEqual(FMS2_C, 0.999, "AbsTol", 1e-3);
+    testCase.verifyEqual(out.OuterIterations, 69);
 
 end

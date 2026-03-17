@@ -72,7 +72,8 @@ for p=1:P
                 M=[ones(szBk,1),x',x.^2',x.^3'];
                 [Morth,~,~]=svd(M,0);
                 for k=1:length(sz{n})
-                    [Pk,~] = qr(randn(4,length(lambdas{p})),0);
+                    [Pk,Rk] = qr(randn(4,length(lambdas{p})),0);
+                    Pk = Pk * diag(sign(diag(Rk))); % GRvdP: make qr consistent across platforms
                     Bk = Pk*B;
                     A{n}{k} = Morth*Bk;
                     if normalize_columns
