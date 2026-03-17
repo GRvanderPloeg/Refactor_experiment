@@ -79,6 +79,9 @@ function test_workflow(testCase)
     % create data
     [X, Atrue, Deltatrue,sigmatrue] = cmtf.utils.create_coupled_data_smoothBks('model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, 'noise', noise,'coupling',coupling,'normalize_columns',normalize_columns,'distr_data',distr_data,'loss_function',Z.loss_function); %create data
     norm(X{1})
+    for p=1:30
+        norm(X{2}{p})
+    end
     % create Z.object and normalize
     normZ=cell(P,1);
     for p=1:P
