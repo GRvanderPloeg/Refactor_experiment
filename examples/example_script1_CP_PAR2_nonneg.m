@@ -49,7 +49,7 @@ constraints{6} = {'non-negativity'};
 %% add optional ridge regularization performed via primal variable updates, not proximal operators (for no ridge leave field empty), will automatically be added to function value computation
 %Z.ridge = [1e-3,1e-3,1e-3,1e-3,1e-3,1e-3]; % penalties for each mode 
 %% set weights
-weights = [1/2 1/2]; %weight w_i for each data set
+weights = [1/20 1/2]; %weight w_i for each data set
 
 %% set lbfgsb options (only needed for loss functions other than Frobenius)
 % lbfgsb_options.m = 5;
