@@ -120,5 +120,8 @@ function test_workflow(testCase)
 
     testCase.verifyEqual(Fit2, 87.8291, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS2, 0.9536, "AbsTol", 1e-3);
-    testCase.verifyEqual(out.OuterIterations, 102);
+
+    % GRvdP: the following test cannot be run.
+    % L-BFGS collects floating-point errors across iterations that are different between platforms.
+    %testCase.verifyEqual(out.OuterIterations, 102);
 end
