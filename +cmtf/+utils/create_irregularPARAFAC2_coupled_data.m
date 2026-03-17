@@ -65,7 +65,14 @@ for p=1:P
                 %orthonormal PARAFAC2 matrices Bk
                 A{n} = cell(length(sz{n}),1);
                 for k=1:length(sz{n})
-                    A{n}{k} = orth(feval(distr_data{n},sz{n}(k),length(lambdas{p})));
+                    Q = orth(feval(distr_data{n},sz{n}(k),length(lambdas{p})));
+                    % Canonicalize signs to ensure cross-platform reproducibility:
+                    % orth() uses SVD internally; different LAPACK implementations
+                    % (e.g. Apple Accelerate vs Intel MKL) may flip column signs.
+                    [~, idx] = max(abs(Q), [], 1);
+                    col_signs = sign(Q(idx + (0:size(Q,2)-1)*size(Q,1)));
+                    col_signs(col_signs == 0) = 1;
+                    A{n}{k} = Q .* col_signs;
                 end
             end
         end
