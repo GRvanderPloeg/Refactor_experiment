@@ -115,8 +115,6 @@ function test_workflow(testCase)
     FMS2 = score(Zhat{2},true_ktensor{2});
 
     % Test expected output (see ~/examples/expectedOutput)
-    testCase.verifyEqual(out.f_tensors, 16177.09023, "AbsTol", 1e-3);
-
     testCase.verifyEqual(Fit1, 89.0093, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS1, 0.9942, "AbsTol", 1e-3);
 
@@ -126,4 +124,7 @@ function test_workflow(testCase)
     % GRvdP: the following test cannot be run.
     % L-BFGS collects floating-point errors across iterations that are different between platforms.
     %testCase.verifyEqual(out.OuterIterations, 102);
+
+    % GRvdP: for the same reason, the function value test is less strict.
+    testCase.verifyEqual(out.f_tensors, 16177.09023, "AbsTol", 1e-2);
 end
