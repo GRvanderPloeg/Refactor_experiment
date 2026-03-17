@@ -139,4 +139,5 @@ function test_workflow(testCase)
     testCase.verifyEqual(FMS_A, 0.9968, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS_B, 0.9685, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS_C, 0.9983, "AbsTol", 1e-3);
+    testCase.verifyEqual(out.OuterIterations, 190);
 end

@@ -124,4 +124,5 @@ function test_workflow(testCase)
     % Test expected output (see ~/examples/expectedOutput)
     testCase.verifyEqual(Fit1, 61.043, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS1, 0.999, "AbsTol", 1e-3);
+    testCase.verifyEqual(out.OuterIterations, 805);
 end
