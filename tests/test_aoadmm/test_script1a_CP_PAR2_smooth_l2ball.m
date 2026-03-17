@@ -145,8 +145,8 @@ function test_workflow(testCase)
     FMS2_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);
 
     % Test expected output (see ~/examples/expectedOutput)
-    % Due to a bug in platform-dependent generation of Bks,
-    % these tests are loosened.
+    testCase.verifyEqual(out.f_tensors, 0.22161, "AbsTol", 1e-3);
+
     testCase.verifyEqual(Fit1, 79.9893, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS1, 0.9979, "AbsTol", 1e-3);
 

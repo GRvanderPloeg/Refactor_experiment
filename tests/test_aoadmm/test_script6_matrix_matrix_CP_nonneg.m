@@ -136,6 +136,8 @@ function test_workflow(testCase)
     FMS3 = score(Zhat{3},true_ktensor{3});    
 
     % Test expected output (see ~/examples/expectedOutput)
+    testCase.verifyEqual(out.f_tensors, 0.036759, "AbsTol", 1e-3);
+
     testCase.verifyEqual(Fit1, 96.128, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS1, 0.998, "AbsTol", 1e-3);
 

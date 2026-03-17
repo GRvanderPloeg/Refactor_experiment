@@ -129,6 +129,8 @@ function test_workflow(testCase)
     FMS_B = score(ktensor(ones(3,1),SollargeB),ktensor(ones(3,1),largeB),'lambda_penalty',false);
 
     % Test expected output (see ~/examples/expectedOutput)
+    testCase.verifyEqual(out.f_tensors, 0.035565, "AbsTol", 1e-3);
+
     testCase.verifyEqual(Fit1, 96.4435, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS_A, 1, "AbsTol", 1e-3);
     testCase.verifyEqual(FMS_B, 0.9953, "AbsTol", 1e-3);
