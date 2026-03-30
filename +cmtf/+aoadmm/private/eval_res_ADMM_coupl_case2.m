@@ -1,4 +1,4 @@
-function [rel_primal_res_coupling,rel_dual_res_coupling] = eval_res_ADMM_coupl_case2(modes,coupl_id,oldDelta)
+function [rel_primal_res_coupling,rel_dual_res_coupling] = eval_res_ADMM_coupl_case2(Z,G,modes,coupl_id,oldDelta)
 % computes relative primal and dual residuals of ADMM iteration for factor
 % matrices in in coupled modes connected (coupling case 2 only!)
     rel_primal_res_coupling = 0;
