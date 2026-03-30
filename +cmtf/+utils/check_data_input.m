@@ -1,5 +1,21 @@
 function [] = check_data_input(sz,modes,lambdas,coupling,loss_function,model)
-%checks if all dimensions for coupling match each other
+% Validate CMTF problem inputs for consistency.
+%
+% Checks that sizes, modes, coupling types, transformation matrices, and
+% component counts are mutually consistent. Errors on invalid configurations
+% and warns on ignored fields (e.g. coupling matrices for uncoupled modes).
+%
+% Syntax:
+%   cmtf.utils.check_data_input(sz, modes, lambdas, coupling, loss_function, model)
+%
+% Inputs:
+%   sz            - Cell array of mode sizes (one entry per unique mode)
+%   modes         - Cell array (one per tensor) of mode index vectors
+%   lambdas       - Cell array (one per tensor) of component weight vectors
+%   coupling      - Struct with fields: lin_coupled_modes, coupling_type,
+%                   coupl_trafo_matrices
+%   loss_function - Cell array (one per tensor) of loss function name strings
+%   model         - Cell array (one per tensor) of model type strings ('CP' or 'PAR2')
 
 lin_coupled_modes = coupling.lin_coupled_modes;
 coupling_type = coupling.coupling_type;

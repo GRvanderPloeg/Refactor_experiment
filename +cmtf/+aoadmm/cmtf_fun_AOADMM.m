@@ -1,6 +1,32 @@
 function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,options)
-% performs AOADMM for CMTF 
-    
+% Alternating Optimization ADMM (AOADMM) inner loop for CMTF.
+%
+% Performs one full pass of alternating optimization over all modes of the
+% coupled tensor factorization problem, using ADMM to handle constraints
+% and couplings. Supports CP and PARAFAC2 models, multiple coupling types,
+% Frobenius and non-Frobenius loss functions.
+%
+% Syntax:
+%   [G, out] = cmtf_fun_AOADMM(Z, Znorm_const, G, fh, gh, lscalar, uscalar, options)
+%
+% Inputs:
+%   Z          - Problem structure with fields: object, modes, size, weights,
+%                coupling, loss_function, model, constrained_modes, (optional) ridge
+%   Znorm_const - Scalar normalization constant used in objective evaluation
+%   G          - Factor struct with field .fac (cell array of factor matrices)
+%   fh         - Function handle for non-Frobenius loss evaluation
+%   gh         - Gradient handle for non-Frobenius loss (used by L-BFGS-B)
+%   lscalar    - Lower bound scalar for L-BFGS-B updates
+%   uscalar    - Upper bound scalar for L-BFGS-B updates
+%   options    - Struct with solver settings (MaxOuterIters, Display,
+%                DisplayIters, AbsFuncTol, OuterRelTol, bsum, etc.)
+%
+% Outputs:
+%   G   - Updated factor struct after all AO-ADMM iterations
+%   out - Struct with convergence diagnostics: f_tensors, f_couplings,
+%         f_constraints, f_PAR2_couplings, exit_flag, OuterIterations,
+%         func_val_conv, innerIters, time_at_it, (optionally lbfgsb_iterations)
+
     if isfield(options,'lbfgsb_options')
         lbfgsb_options = options.lbfgsb_options;
     end

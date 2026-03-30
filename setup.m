@@ -1,6 +1,14 @@
 function setup()
-%SETUP  Add CMTF Toolbox and dependencies to MATLAB path.
-% TODO: recognize if compile_mex.m needs to be run.
+%SETUP  Add the CMTF Toolbox and its external dependencies to the MATLAB path.
+%
+% Adds the toolbox root and any present external libraries (Tensor Toolbox,
+% Poblano, L-BFGS-B wrapper, proximal operators) to the path. Silently skips
+% dependencies whose folders are not found.
+%
+% Syntax:
+%   setup()
+%
+% TODO: detect whether compile_mex.m needs to be run.
 
 root = fileparts(mfilename('fullpath'));
 

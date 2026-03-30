@@ -1,5 +1,24 @@
 function [stop] = evaluate_stopping_conditions(f_tensors,f_couplings,f_constraints,f_PAR2_couplings,f_tensors_old,f_couplings_old,f_constraints_old,f_PAR2_couplings_old,options)
-% wether or not to stop
+% Evaluate convergence stopping conditions for the AOADMM outer loop.
+%
+% Returns true if ALL four objective components (tensor fit, coupling,
+% constraints, PARAFAC2 coupling) have individually converged, where
+% convergence means either the value is below options.AbsFuncTol or its
+% relative change from the previous iteration is below options.OuterRelTol.
+%
+% Syntax:
+%   stop = cmtf.utils.evaluate_stopping_conditions( ...
+%              f_tensors, f_couplings, f_constraints, f_PAR2_couplings, ...
+%              f_tensors_old, f_couplings_old, f_constraints_old, f_PAR2_couplings_old, ...
+%              options)
+%
+% Inputs:
+%   f_tensors, f_couplings, f_constraints, f_PAR2_couplings         - Current objective components
+%   f_tensors_old, f_couplings_old, f_constraints_old, f_PAR2_couplings_old - Previous iteration values
+%   options - Struct with fields AbsFuncTol and OuterRelTol
+%
+% Output:
+%   stop - Logical scalar; true if all components have converged
 stop_tensors = false;
 stop_couplings = false;
 stop_constraints = false;

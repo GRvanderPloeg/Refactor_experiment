@@ -38,6 +38,23 @@
 
 
 function x = TV_Condat_v2(y, lambda)
+% 1-D total variation denoising via the Condat v2 algorithm (O(N) complexity).
+%
+% Syntax:
+%   x = TV_Condat_v2(y, lambda)
+%
+% Inputs:
+%   y      - Input signal vector of length N (row or column)
+%   lambda - Non-negative regularization parameter; larger values produce
+%            smoother output
+%
+% Output:
+%   x - Denoised signal minimizing ||x-y||_2^2/2 + lambda*TV(x),
+%       where TV(x) = sum_{n=1}^{N-1} |x[n+1]-x[n]|
+%
+% See the file-level comments above for algorithmic details and the
+% original reference (Condat, IEEE Signal Proc. Letters, 2013).
+
 	N = length(y);
 	if N<=1, x=y; return; end;
 	x = zeros(size(y)); % y can be a row or column vector.

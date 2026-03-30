@@ -1,4 +1,21 @@
-function p = t_smoothness_prox(factor_matrices,rho,smoothness_l)
+function p = t_smoothness_prox(factor_matrices, rho, smoothness_l)
+% Proximal operator for the temporal smoothness penalty.
+%
+% Solves the proximal subproblem for the temporal smoothness regularization
+% term by solving a tridiagonal system via Gaussian elimination and
+% back-substitution (Thomas algorithm).
+%
+% Syntax:
+%   p = cmtf.prox.t_smoothness_prox(factor_matrices, rho, smoothness_l)
+%
+% Inputs:
+%   factor_matrices - Cell array of K factor matrices {B_1, ..., B_K}
+%   rho             - Vector of K ADMM penalty parameters (one per slice)
+%   smoothness_l    - Non-negative scalar weight for the smoothness penalty
+%
+% Output:
+%   p - Cell array of K updated factor matrices, minimizing:
+%       sum_i rho(i)/2 * ||p_i - B_i||_F^2 + smoothness_l * sum_i ||p_i - p_{i-1}||_F^2
 
 rhs = cell(length(factor_matrices),1);
 
