@@ -47,7 +47,7 @@ for p=1:P
     for n = modes{p}
         if nvecs % use singular vectors for initialization for each mode separately, even if the coupling is exact!
             if strcmp(model{p},'CP')
-                A.fac{n} = cmtf_nvecs(Z,n,length(lambdas{p}));
+                A.fac{n} = cmtf.utils.cmtf_nvecs(Z,n,length(lambdas{p}));
             elseif strcmp(model{p},'PAR2')
                 if 1 == find(modes{p}==n)
                     M = [];
