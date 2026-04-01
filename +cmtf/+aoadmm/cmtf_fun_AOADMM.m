@@ -156,7 +156,7 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                                     B{m} = B{m}+ rho{m}/2*eye(size(B{m})); % for constraint
                                     L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition of B (only works in the chase when rho does not change between inner iterations)
                                 end
-                                [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,A{m},L{m},m,p,rho,options);
+                                [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,lscalar,uscalar,fh,gh,A{m},L{m},m,p,rho,options);
                             end
                             out.innerIters(m,iter)= inner_iters;
                             if strcmp(Z.loss_function{p},'Frobenius')
@@ -198,7 +198,7 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                                 else % mode is constrained, use ADMM
                                     B{m} = B{m}+ rho{m}/2*eye(size(B{m})); % for constraint
                                     L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition
-                                    [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,A{m},L{m},m,p,rho,options);
+                                    [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,lscalar,uscalar,fh,gh,A{m},L{m},m,p,rho,options);
                                 end
                             end
                             out.innerIters(m,iter)= inner_iters;
@@ -257,7 +257,7 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                                 end
                             end
                             if Z.constrained_modes(m) && coupl_id == 0 % is constrained and not coupled, use ADMM
-                                [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,A{m},L{m},m,p,rho,options);
+                                [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,lscalar,uscalar,fh,gh,A{m},L{m},m,p,rho,options);
                             end
                             out.innerIters(m,iter)= inner_iters;
                         end

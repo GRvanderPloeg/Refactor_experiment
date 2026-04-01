@@ -1,4 +1,4 @@
-function [inner_iter,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,A,L,m,p,rho,options)
+function [inner_iter,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,lscalar,uscalar,fh,gh,A,L,m,p,rho,options)
 %ADMM loop for mode m, where mode m is constrained, but not coupled!
 % changes the global variable G (only fields related to mode m)
 
@@ -20,7 +20,7 @@ function [inner_iter,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,A
             end
             lbfgsb_iterations{m} = [];
         else % other loss function, use lbfgsb
-            [lbfgsb_iterations{m}(inner_iter)] = lbfgsb_update(p,m,true,-1,rho{m}); %updates G.fac{m}
+            [lbfgsb_iterations{m}(inner_iter),G] = lbfgsb_update(Z,G,lscalar,uscalar,fh,gh,p,m,true,-1,rho{m},options); %updates G.fac{m}
         end
 
         % Update constraint factor (Z) and its dual (mu_Z)
