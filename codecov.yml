@@ -2,3 +2,4 @@ ignore:
   - "external/"
   - "examples/"
   - "tests/"
+  - "setup.m"
