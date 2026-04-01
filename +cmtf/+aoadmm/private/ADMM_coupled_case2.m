@@ -1,4 +1,4 @@
-function [inner_iter,lbfgsb_iterations,G] = ADMM_coupled_case2(Z,G,nb_modes,which_p,m,A,L,coupled_modes,coupl_id,rho,options)
+function [inner_iter,lbfgsb_iterations,G] = ADMM_coupled_case2(Z,G,nb_modes,which_p,m,lscalar,uscalar,fh,gh,A,L,coupled_modes,coupl_id,rho,options)
     inner_iter = 1;
     rel_primal_res_coupling = inf;
     rel_primal_res_constr = inf;
@@ -17,7 +17,7 @@ function [inner_iter,lbfgsb_iterations,G] = ADMM_coupled_case2(Z,G,nb_modes,whic
                 G.fac{mm} = (A_inner/L{mm}')/L{mm}; % forward-backward substitution
                 lbfgsb_iterations{m} = [];
             else
-               [lbfgsb_iters(inner_iter)] = lbfgsb_update(pp,mm,Z.constrained_modes(mm),2,rho{mm}); %updates G.fac{m} with lbfgsb
+               [lbfgsb_iters(inner_iter),G] = lbfgsb_update(Z,G,lscalar,uscalar,fh,gh,pp,mm,Z.constrained_modes(mm),2,rho{mm},options); %updates G.fac{m} with lbfgsb
                 lbfgsb_iterations{mm} = lbfgsb_iters;
             end
         end
