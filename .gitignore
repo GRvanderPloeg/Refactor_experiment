@@ -3,3 +3,6 @@
 
 # Coverage reports
 coverage.xml
+
+# Local coverage generating script
+run_tests_with_coverage.m

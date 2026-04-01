@@ -324,7 +324,7 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                                     L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition of B (only works in the chase when rho does not change between inner iterations)
                                 end
                             end
-                            [inner_iters,lbfgsb_iterations] = ADMM_coupled_case3(A,L,coupled_modes,coupl_id,rho,options);
+                            [inner_iters,lbfgsb_iterations,G] = ADMM_coupled_case3(Z,G,nb_modes,which_p,m,A,L,coupled_modes,coupl_id,rho,options);
                         case 4
                             for m=coupled_modes
                                 p = which_p(m);
