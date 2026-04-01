@@ -67,3 +67,117 @@ function test_smoothBks_lie_in_polynomial_subspace(testCase)
         verifyLessThan(testCase, residual, 1e-10);
     end
 end
+
+function test_coupling_type1(testCase)
+% PAR2 coupled with CP tensor via linear coupling (type 1).
+    rng(10, 'twister');
+
+    model{1} = 'CP';
+    model{2} = 'PAR2';
+    sz     = {50, 30, 40, 100, 200*ones(1,8), 8};
+    modes  = {[1 2 3], [4 5 6]};
+    lambdas_data = {[1 1 1], [1 1 1]};
+    noise  = 0.3;
+
+    coupling.lin_coupled_modes    = [1 0 0 1 0 0];
+    coupling.coupling_type        = 1;
+    coupling.coupl_trafo_matrices = cell(6,1);
+    coupling.coupl_trafo_matrices{1} = eye(50, 50);
+    H = zeros(50, 100);
+    for i = 1:50, H(i, 2*i-1) = 1; end
+    coupling.coupl_trafo_matrices{4} = H;
+
+    distr_data = {@(x,y) randn(x,y), @(x,y) randn(x,y), @(x,y) randn(x,y), ...
+                  @(x,y) randn(x,y), @(x,y) randn(x,y), @(x,y) rand(x,y)+0.1};
+    loss_function = {'Frobenius', 'Frobenius'};
+
+    [~, ~, ~, ~] = cmtf.utils.create_coupled_data_smoothBks( ...
+        'model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, ...
+        'noise', noise, 'coupling', coupling, 'distr_data', distr_data, ...
+        'loss_function', loss_function);
+end
+
+function test_coupling_type2(testCase)
+% PAR2 coupled with CP tensor via component-space coupling (type 2).
+    rng(11, 'twister');
+
+    R = 3;
+    model{1} = 'CP';
+    model{2} = 'PAR2';
+    sz     = {20, 30, 40, 20, 200*ones(1,8), 8};
+    modes  = {[1 2 3], [4 5 6]};
+    lambdas_data = {ones(1,R), ones(1,R)};
+    noise  = 0.2;
+
+    coupling.lin_coupled_modes    = [1 0 0 1 0 0];
+    coupling.coupling_type        = 2;
+    coupling.coupl_trafo_matrices = cell(6,1);
+    d = 2;
+    coupling.coupl_trafo_matrices{1} = rand(R, d);
+    coupling.coupl_trafo_matrices{4} = rand(R, d);
+
+    distr_data = {@(x,y) rand(x,y), @(x,y) randn(x,y), @(x,y) randn(x,y), ...
+                  @(x,y) rand(x,y), @(x,y) randn(x,y), @(x,y) rand(x,y)+0.1};
+    loss_function = {'Frobenius', 'Frobenius'};
+
+    [~, ~, ~, ~] = cmtf.utils.create_coupled_data_smoothBks( ...
+        'model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, ...
+        'noise', noise, 'coupling', coupling, 'distr_data', distr_data, ...
+        'loss_function', loss_function);
+end
+
+function test_coupling_type3(testCase)
+% PAR2 coupled with CP tensor via latent-space coupling (type 3).
+    rng(12, 'twister');
+
+    R = 3;
+    model{1} = 'CP';
+    model{2} = 'PAR2';
+    sz     = {20, 30, 40, 25, 200*ones(1,8), 8};
+    modes  = {[1 2 3], [4 5 6]};
+    lambdas_data = {ones(1,R), ones(1,R)};
+    noise  = 0.2;
+
+    coupling.lin_coupled_modes    = [1 0 0 1 0 0];
+    coupling.coupling_type        = 3;
+    coupling.coupl_trafo_matrices = cell(6,1);
+    d = 5;
+    coupling.coupl_trafo_matrices{1} = rand(sz{1}, d);
+    coupling.coupl_trafo_matrices{4} = rand(sz{4}, d);
+
+    distr_data = {@(x,y) rand(x,y), @(x,y) randn(x,y), @(x,y) randn(x,y), ...
+                  @(x,y) rand(x,y), @(x,y) randn(x,y), @(x,y) rand(x,y)+0.1};
+    loss_function = {'Frobenius', 'Frobenius'};
+
+    [~, ~, ~, ~] = cmtf.utils.create_coupled_data_smoothBks( ...
+        'model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, ...
+        'noise', noise, 'coupling', coupling, 'distr_data', distr_data, ...
+        'loss_function', loss_function);
+end
+
+function test_coupling_type4(testCase)
+% PAR2 coupled with CP tensor via partial coupling (type 4).
+    rng(13, 'twister');
+
+    model{1} = 'CP';
+    model{2} = 'PAR2';
+    sz     = {50, 30, 40, 50, 200*ones(1,8), 8};
+    modes  = {[1 2 3], [4 5 6]};
+    lambdas_data = {[1 1 1 1], [1 1 1]};
+    noise  = 0.2;
+
+    coupling.lin_coupled_modes    = [1 0 0 1 0 0];
+    coupling.coupling_type        = 4;
+    coupling.coupl_trafo_matrices = cell(6,1);
+    coupling.coupl_trafo_matrices{1} = eye(4, 4);
+    coupling.coupl_trafo_matrices{4} = [eye(3,3); 0 0 0]; % 4x3
+
+    distr_data = {@(x,y) rand(x,y), @(x,y) randn(x,y), @(x,y) randn(x,y), ...
+                  @(x,y) rand(x,y), @(x,y) randn(x,y), @(x,y) rand(x,y)+0.1};
+    loss_function = {'Frobenius', 'Frobenius'};
+
+    [~, ~, ~, ~] = cmtf.utils.create_coupled_data_smoothBks( ...
+        'model', model, 'size', sz, 'modes', modes, 'lambdas', lambdas_data, ...
+        'noise', noise, 'coupling', coupling, 'distr_data', distr_data, ...
+        'loss_function', loss_function);
+end

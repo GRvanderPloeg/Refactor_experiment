@@ -110,7 +110,7 @@ function test_workflow(testCase)
     init_fac = cmtf.utils.init_coupled_AOADMM_CMTF(Z, 'init_options', init_options);
 
     % Algorithm options
-    options.Display               = 'iter';
+    options.Display               = 'no';
     options.DisplayIters          = 10;
     options.MaxOuterIters         = 4000;
     options.MaxInnerIters         = 5;
