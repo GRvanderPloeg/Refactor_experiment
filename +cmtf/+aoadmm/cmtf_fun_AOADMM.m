@@ -104,43 +104,9 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
 
                     % AO: mode 1 (the coupled mode)
                     for m=coupled_modes(which_p(coupled_modes)==p) %loop over all modes in tensor p with this coupling_id (can NOT be done in parallel)
-                        if strcmp(Z.loss_function{p},'Frobenius')
-                            % precomputations
-                            if length(size(Z.object{p}))>=3  % Tensor
-                                A{m} = Z.weights(p) *mttkrp(Z.object{p},G.fac(Z.modes{p}),find(Z.modes{p}==m)); %efficient calculation of matricized tensor with kathrirao product of all factor matrices, but the mth
-                                C{m} = ones(size(G_transp_G{m}));
-                                for j=Z.modes{p} 
-                                    if(j~=m)
-                                        C{m} = C{m} .* G_transp_G{j}; % efficient calculation of the product of khatrirao products
-                                    end
-                                end
-
-                            else % Matrix
-                                matrix_mode = find(Z.modes{p}==m);
-                                if matrix_mode == 1 %first mode in matrix
-                                    A{m} = Z.weights(p)* double(Z.object{p})*G.fac{Z.modes{p}(2)};
-                                    C{m} = G_transp_G{Z.modes{p}(2)};
-                                else %second mode in matrix
-                                    A{m} = Z.weights(p)* double(Z.object{p})'*G.fac{Z.modes{p}(1)}; %transposed M!
-                                    C{m} = G_transp_G{Z.modes{p}(1)};
-                                end
-                            end
-                            rho{m} = trace(C{m})/size(C{m},1);
-                            B{m} = Z.weights(p)* C{m}; 
-                            if isfield(Z,'ridge')
-                                B{m} = B{m} + Z.ridge(m)*eye(size(B{m}));
-                            end
-
-                            last_mttkrp{p} = A{m}*1/Z.weights(p);
-                            last_had{p} = C{m};
-                            last_m(p) = m;
-                            if options.bsum
-                                A{m} = A{m} + options.bsum_weight/2*G.fac{m};
-                                B{m} = B{m} + options.bsum_weight/2*eye(size(B{m}));
-                            end
-                        else % other loss than Frobenius
-                            rho{m} = sum(sum_column_norms_sqr([1:m-1,m+1:end])); 
-                        end
+                        [A{m},B{m},C{m},rho{m},last_mttkrp,last_had,last_m] = ...
+                            precompute_mode_cp(Z,G,G_transp_G,sum_column_norms_sqr,...
+                                               m,p,last_mttkrp,last_had,last_m,options);
                         if coupl_id==0 %modes are not coupled
                             if (Z.constrained_modes(m)==0) % mode is not constrained
                                 if strcmp(Z.loss_function{p},'Frobenius')
