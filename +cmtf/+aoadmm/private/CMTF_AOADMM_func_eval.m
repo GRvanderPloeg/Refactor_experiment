@@ -11,10 +11,15 @@
     for pp = 1:P
         if strcmp(Z.model{pp},'CP')
             if strcmp(Z.loss_function{pp},'Frobenius')
+                % Use the fast path (cached MTTKRP) when available and valid.
+                % isempty(last_mttkrp) catches the initial call where the cell
+                % has not been populated yet. isempty(last_mttkrp{pp}) catches
+                % the per-tensor invalidation done after the EM imputation step.
+                use_fast = ~isempty(last_mttkrp) && ~isempty(last_mttkrp{pp});
                 if length(size(Z.object{pp}))>=3
-                    % Tensor 
-                    if isempty(last_mttkrp)
-                       fp(pp) = cmtf.losses.cp_func(Z.object{pp}, G.fac(Z.modes{pp}),  Znorm_const{pp},Z.weights(pp)); 
+                    % Tensor
+                    if ~use_fast
+                       fp(pp) = cmtf.losses.cp_func(Z.object{pp}, G.fac(Z.modes{pp}),  Znorm_const{pp},Z.weights(pp));
                     else
                         f_1 =  Znorm_const{pp};
                         V = last_mttkrp{pp}.*G.fac{last_m(pp)};
@@ -25,9 +30,9 @@
                         fp(pp) = Z.weights(pp) *f;
                     end
                 elseif length(size(Z.object{pp}))==2
-                    % Matrix   
-                   if isempty(last_mttkrp)
-                        fp(pp) = cmtf.losses.pca_func(Z.object{pp}, G.fac(Z.modes{pp}),  Znorm_const{pp},Z.weights(pp));   
+                    % Matrix
+                    if ~use_fast
+                        fp(pp) = cmtf.losses.pca_func(Z.object{pp}, G.fac(Z.modes{pp}),  Znorm_const{pp},Z.weights(pp));
                     else
                         f_1 =  Znorm_const{pp};
                         V = last_mttkrp{pp}.*G.fac{last_m(pp)};
@@ -43,7 +48,7 @@
             end
         elseif strcmp(Z.model{pp},'PAR2')
             fp(pp) = 0;
-            if ~isempty(last_mttkrp) && last_m(pp)==1
+            if ~isempty(last_mttkrp) && ~isempty(last_mttkrp{pp}) && last_m(pp)==1
                 f_1 =  Znorm_const{pp};
                 V = last_mttkrp{pp}.*G.fac{Z.modes{pp}(1)};
                 f_2 = sum(V(:));
