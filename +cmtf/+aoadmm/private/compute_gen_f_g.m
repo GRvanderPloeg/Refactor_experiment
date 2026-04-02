@@ -29,7 +29,7 @@ function [function_value,gradient_vector] = compute_gen_f_g(Z,G,x,p,m,ff,gg,cons
             function_value = function_value + rho/2*sum((x-reshape(G.coupling_fac{n}*Z.coupling.coupl_trafo_matrices{m},[],1)+G.coupling_dual_fac{m}(:)).^2);
             gradient_vector = gradient_vector + rho*(x-reshape(G.coupling_fac{n}*Z.coupling.coupl_trafo_matrices{m},[],1)+G.coupling_dual_fac{m}(:));
     end
-    if isfield(Z,'ridge')
+    if isfield(Z,'ridge') % If f=lambda*sum(x.^2) then surely df/fx=2*lambda*x and NOT lambda/2*x??? So the gradient should be 2*Z.ridge(m)*x
         function_value = function_value + Z.ridge(m)*sum(x.^2);
         gradient_vector = gradient_vector + Z.ridge(m)/2*x;
     end

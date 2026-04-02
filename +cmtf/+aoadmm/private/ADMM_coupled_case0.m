@@ -26,7 +26,7 @@ function [inner_iter,lbfgsb_iterations,G] = ADMM_coupled_case0(Z,G,nb_modes,whic
                     end
                     G.fac{mm} = (A_inner/L{mm}')/L{mm}; % forward-backward substitution
                 end
-                lbfgsb_iterations{m} = [];
+                lbfgsb_iterations{mm} = [];
             else
                 [lbfgsb_iters(inner_iter),G] = lbfgsb_update(Z,G,lscalar,uscalar,fh,gh,pp,mm,Z.constrained_modes(mm),0,rho{mm},options); %updates G.fac{m}
                 lbfgsb_iterations{mm} = lbfgsb_iters;

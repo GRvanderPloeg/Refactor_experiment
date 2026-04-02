@@ -15,7 +15,7 @@ function [inner_iter,lbfgsb_iterations,G] = ADMM_coupled_case1(Z,G,nb_modes,whic
                     A_inner = A_inner + rho{mm}/2*(G.constraint_fac{mm} - G.constraint_dual_fac{mm});
                 end
                 G.fac{mm} = sylvester(B2{mm},B{mm},A_inner); % solve Sylvester equation
-                lbfgsb_iterations{m} = [];
+                lbfgsb_iterations{mm} = [];
             else
                 [lbfgsb_iters(inner_iter),G] = lbfgsb_update(Z,G,lscalar,uscalar,fh,gh,pp,mm,Z.constrained_modes(mm),1,rho{mm},options); %updates G.fac{m} with lbfgsb
                 lbfgsb_iterations{mm} = lbfgsb_iters;
