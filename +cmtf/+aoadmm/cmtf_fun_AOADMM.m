@@ -215,19 +215,23 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                 if strcmp(Z.model{p}, 'CP')
                     M_full = double(full(ktensor(G.fac(Z.modes{p}))));
                     miss_mask = ~Z.miss{p};
-                    old_vals = double(Z.object{p}(miss_mask));
-                    new_vals = M_full(miss_mask);
-                    num_sq = num_sq + sum((new_vals - old_vals).^2);
-                    den_sq = den_sq + sum(old_vals.^2);
+                    % tensor objects do not support 3-D logical indexing;
+                    % extract as double, modify, then wrap back.
                     if isa(Z.object{p}, 'tensor')
                         tmp = double(Z.object{p});
+                        old_vals = tmp(miss_mask);
+                        new_vals = M_full(miss_mask);
                         tmp(miss_mask) = new_vals;
                         Z.object{p} = tensor(tmp);
                         Znorm_const{p} = norm(Z.object{p})^2;
                     else
+                        old_vals = Z.object{p}(miss_mask);
+                        new_vals = M_full(miss_mask);
                         Z.object{p}(miss_mask) = new_vals;
                         Znorm_const{p} = norm(Z.object{p}(:))^2;
                     end
+                    num_sq = num_sq + sum((new_vals - old_vals).^2);
+                    den_sq = den_sq + sum(old_vals.^2);
                 elseif strcmp(Z.model{p}, 'PAR2')
                     m1 = Z.modes{p}(1); m2 = Z.modes{p}(2); m3 = Z.modes{p}(3);
                     Znorm_const{p} = 0;
@@ -291,6 +295,9 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
     out.f_PAR2_couplings = f_PAR2_couplings;
     out.exit_flag = exit_flag;
     out.OuterIterations = iter-1;
+    if has_missing
+        out.f_rel_missing_final = f_rel_missing;
+    end
     out.func_val_conv = func_val;
     out.func_coupl_conv = func_coupl;
     out.func_constr_conv = func_constr;

@@ -58,11 +58,13 @@ if isfield(Z, 'miss')
     for p = 1:P
         if isempty(Z.miss{p}), continue; end
         if ~strcmp(Z.loss_function{p}, 'Frobenius')
-            error('Missing data (Z.miss) is only supported for Frobenius loss functions.');
+            error('cmtf:missingData:nonFrobenius', ...
+                'Missing data (Z.miss) is only supported for Frobenius loss functions.');
         end
         if strcmp(Z.model{p}, 'CP')
             if isa(Z.object{p}, 'sptensor')
-                error('Missing data (Z.miss) not supported for sptensor objects. Convert to tensor first.');
+                error('cmtf:missingData:sptensor', ...
+                    'Missing data (Z.miss) not supported for sptensor objects. Convert to tensor first.');
             end
             if isa(Z.object{p}, 'tensor')
                 sz_obj = Z.object{p}.size;
@@ -70,10 +72,12 @@ if isfield(Z, 'miss')
                 sz_obj = size(Z.object{p});
             end
             if ~islogical(Z.miss{p})
-                error('Z.miss{%d} must be a logical array.', p);
+                error('cmtf:missingData:maskNotLogical', ...
+                    'Z.miss{%d} must be a logical array.', p);
             end
             if ~isequal(sz_obj, size(Z.miss{p}))
-                error('Z.miss{%d} size does not match Z.object{%d}.', p, p);
+                error('cmtf:missingData:maskSizeMismatch', ...
+                    'Z.miss{%d} size does not match Z.object{%d}.', p, p);
             end
             if isa(Z.object{p}, 'tensor')
                 tmp = double(Z.object{p});
@@ -85,14 +89,17 @@ if isfield(Z, 'miss')
         elseif strcmp(Z.model{p}, 'PAR2')
             K = length(Z.object{p});
             if ~iscell(Z.miss{p}) || length(Z.miss{p}) ~= K
-                error('Z.miss{%d} must be a cell array of length %d for PAR2.', p, K);
+                error('cmtf:missingData:PAR2maskNotCell', ...
+                    'Z.miss{%d} must be a cell array of length %d for PAR2.', p, K);
             end
             for k = 1:K
                 if ~islogical(Z.miss{p}{k})
-                    error('Z.miss{%d}{%d} must be a logical array.', p, k);
+                    error('cmtf:missingData:PAR2maskSliceNotLogical', ...
+                        'Z.miss{%d}{%d} must be a logical array.', p, k);
                 end
                 if ~isequal(size(Z.object{p}{k}), size(Z.miss{p}{k}))
-                    error('Z.miss{%d}{%d} size does not match Z.object{%d}{%d}.', p, k, p, k);
+                    error('cmtf:missingData:PAR2maskSliceSizeMismatch', ...
+                        'Z.miss{%d}{%d} size does not match Z.object{%d}{%d}.', p, k, p, k);
                 end
                 Z.object{p}{k}(~Z.miss{p}{k}) = 0;
             end
