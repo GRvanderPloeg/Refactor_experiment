@@ -159,7 +159,7 @@ iters = 0:out.OuterIterations;
 
 figure('Name', 'Convergence — coupled CP-CP with missing data', 'NumberTitle', 'off');
 
-subplot(1, 3, 1)
+subplot(2, 2, 1)
 semilogy(iters, out.func_val_conv, 'b-',  'LineWidth', 1.5)
 hold on
 semilogy(iters, out.func_coupl_conv, 'r--', 'LineWidth', 1.5)
@@ -169,7 +169,7 @@ legend('Tensor fit', 'Coupling residual', 'Location', 'southwest')
 title('Objective convergence')
 grid on
 
-subplot(1, 3, 2)
+subplot(2, 2, 2)
 semilogy(out.time_at_it, out.func_val_conv, 'b-', 'LineWidth', 1.5)
 hold on
 semilogy(out.time_at_it, out.func_coupl_conv, 'r--', 'LineWidth', 1.5)
@@ -179,7 +179,7 @@ legend('Tensor fit', 'Coupling residual', 'Location', 'southwest')
 title('Convergence vs time')
 grid on
 
-subplot(1, 3, 3)
+subplot(2, 2, 3)
 % Compare true and recovered factor columns for the shared mode
 A_shared_true = Atrue{1};               % true shared factor (mode 1 = mode 4)
 A_shared_rec  = Fac.fac{1};            % recovered (in normalised space)
@@ -193,4 +193,16 @@ title(sprintf('Shared factor (FMS=%.3f)', FMS1))
 legend('True 1','True 2','True 3','Est 1','Est 2','Est 3','Location','best')
 grid on
 
+subplot(2, 2, 4);
+% Compare hidden missing entries to imputed entries
+miss_mask = ~Z.miss{2};
+tmp = double(Z.object{2});
+old_vals = tmp(miss_mask);
+Xhat = double(Zhat{2});
+new_vals = Xhat(miss_mask);
+scatter(old_vals, new_vals);
+xlabel("Hidden values");
+ylabel("Imputed values");
+title("Imputation of hidden entries")
+grid on
 sgtitle(sprintf('Coupled CP-CP, tensor 2 with %.0f%% missing (EM imputation)', 100*miss_frac))
