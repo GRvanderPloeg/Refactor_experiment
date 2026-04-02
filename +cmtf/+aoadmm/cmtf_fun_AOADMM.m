@@ -108,28 +108,13 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                             precompute_mode_cp(Z,G,G_transp_G,sum_column_norms_sqr,...
                                                m,p,last_mttkrp,last_had,last_m,options);
                         if coupl_id==0 %modes are not coupled
-                            if (Z.constrained_modes(m)==0) % mode is not constrained
-                                if strcmp(Z.loss_function{p},'Frobenius')
-                                    G.fac{m} = A{m}/B{m}; % Update factor matrices (Least squares update)
-                                else
-                                    [lbfgsb_iterations,G] = lbfgsb_update(Z,G,lscalar,uscalar,fh,gh,p,m,false,-1,rho{m},options); %updates G.fac{m} with lbfgsb
-                                end
-                                inner_iters = 1;
-                            else % mode is constrained, use ADMM
-                                if strcmp(Z.loss_function{p},'Frobenius')
-                                    B{m} = B{m}+ rho{m}/2*eye(size(B{m})); % for constraint
-                                    L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition of B (only works in the chase when rho does not change between inner iterations)
-                                end
-                                [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,lscalar,uscalar,fh,gh,A{m},L{m},m,p,rho,options);
-                            end
-                            out.innerIters(m,iter)= inner_iters;
-                            if strcmp(Z.loss_function{p},'Frobenius')
-                                G_transp_G{m} = G.fac{m}'*G.fac{m}; % update G transposed G for mth mode
-                            else
+                            [G,G_transp_G,sum_column_norms_sqr,inner_iters,lbfgsb_iterations] = ...
+                                dispatch_uncoupled(Z,G,nb_modes,G_transp_G,sum_column_norms_sqr,...
+                                                   A{m},B{m},[],rho{m},m,p,rho,...
+                                                   lscalar,uscalar,fh,gh,options);
+                            out.innerIters(m,iter) = inner_iters;
+                            if ~strcmp(Z.loss_function{p},'Frobenius')
                                 out.lbfgsb_iterations{m,iter} = lbfgsb_iterations;
-                                for r=1:size(G.fac{m},2)
-                                    sum_column_norms_sqr(m,1) = norm(G.fac{m}(:,r))^2;
-                                end
                             end
                         end
                     end
