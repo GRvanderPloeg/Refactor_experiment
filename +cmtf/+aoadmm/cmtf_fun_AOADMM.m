@@ -75,19 +75,34 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
     illconditioned = 0;
     
     stop = false;
-    while(iter<=options.MaxOuterIters && ~stop)    
+    while(iter<=options.MaxOuterIters && ~stop)
         %try
-        for coupl_id=couplings %loop over all couplings (and non-coupled modes, if couplings=0)
-            coupled_modes = find(Z.coupling.lin_coupled_modes==coupl_id); % all modes with this coupling_id
-            for p=unique(which_p(coupled_modes)) % loop over all coupled tensors for this coupling_id (can be done in parallel!)
+
+        % --- Alternating Optimization sweep ---
+        % Iterate over all coupling groups. coupl_id=0 collects all uncoupled
+        % modes so they are processed with the same loop structure.
+        for coupl_id=couplings
+            coupled_modes = find(Z.coupling.lin_coupled_modes==coupl_id); % modes belonging to this coupling group
+
+            % Loop over the tensors that contain at least one mode in this
+            % coupling group. Each tensor is processed independently here;
+            % the inter-tensor coupling constraint is enforced afterwards.
+            for p=unique(which_p(coupled_modes))
                 if strcmp(Z.model{p},'CP')
 
-                    % AO: mode 1 (the coupled mode)
-                    for m=coupled_modes(which_p(coupled_modes)==p) %loop over all modes in tensor p with this coupling_id (can NOT be done in parallel)
+                    % For each mode of tensor p that belongs to this coupling group,
+                    % precompute the ADMM subproblem ingredients (normal equations
+                    % LHS A, RHS B, Gram matrix C, and penalty parameter rho).
+                    % Modes within the same tensor must be updated sequentially
+                    % because each update changes G, which invalidates cached MTTKRP.
+                    for m=coupled_modes(which_p(coupled_modes)==p)
                         [A{m},B{m},C{m},rho{m},last_mttkrp,last_had,last_m] = ...
                             precompute_mode_cp(Z,G,G_transp_G,sum_column_norms_sqr,...
                                                m,p,last_mttkrp,last_had,last_m,options);
-                        if coupl_id==0 %modes are not coupled
+
+                        if coupl_id==0 % uncoupled mode: update factor immediately
+                            % dispatch_uncoupled solves the ADMM subproblem for
+                            % mode m and updates G, G_transp_G, and sum_column_norms_sqr.
                             [G,G_transp_G,sum_column_norms_sqr,inner_iters,lbfgsb_iterations] = ...
                                 dispatch_uncoupled(Z,G,nb_modes,G_transp_G,sum_column_norms_sqr,...
                                                    A{m},B{m},[],rho{m},m,p,rho,...
@@ -97,25 +112,42 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                                 out.lbfgsb_iterations{m,iter} = lbfgsb_iterations;
                             end
                         end
+                        % If coupl_id~=0, the factor update is deferred to the
+                        % coupled ADMM step below, once all tensors are precomputed.
                     end
+
                 elseif strcmp(Z.model{p},'PAR2')
+
+                    % PARAFAC2 modes are handled per position within the tensor.
+                    % precompute_mode_par2 returns the orthogonal projection
+                    % matrices L{m} (one per slice) and may directly update G
+                    % for the unconstrained mode (mode position 3).
                     for m=coupled_modes(which_p(coupled_modes)==p)
                         [A{m},B{m},C{m},rho{m},L{m},G,par2_iters,...
                          last_mttkrp,last_had,last_m] = ...
                             precompute_mode_par2(Z,G,G_transp_G,m,p,iter,coupl_id,...
                                                  last_mttkrp,last_had,last_m,options);
-                        mode_pos = find(Z.modes{p}==m);
-                        if mode_pos == 2 % second PAR2 mode (the "funny" mode)
+                        mode_pos = find(Z.modes{p}==m); % position of m within tensor p (1, 2, or 3)
+
+                        if mode_pos == 2
+                            % Mode 2 is the varying-size PARAFAC2 mode (the "funny" mode).
+                            % Its factor matrices B_k differ per slice, so a dedicated
+                            % ADMM solver is required. G_transp_G must be recomputed
+                            % slice-by-slice after the update.
                             [inner_iters,G] = ADMM_B_Parafac2(Z,G,iter,A{m},L{m},m,p,rho{m},options);
                             out.innerIters(m,iter) = inner_iters;
                             for k=1:length(Z.size{Z.modes{p}(2)})
                                 G_transp_G{m}{k} = G.fac{m}{k}'*G.fac{m}{k};
                             end
-                        else % mode_pos 1 or 3
-                            if coupl_id==0
-                                if ~isempty(par2_iters) % mode 3 unconstrained: update done in precompute
+
+                        else % mode_pos 1 (shared factor) or mode_pos 3 (e.g. time mode)
+                            if coupl_id==0 % uncoupled: update factor now
+                                if ~isempty(par2_iters)
+                                    % Mode 3 unconstrained: precompute_mode_par2 already
+                                    % performed a closed-form update; just record iterations.
                                     inner_iters = par2_iters;
                                 else
+                                    % Mode 1 or constrained mode 3: solve via ADMM.
                                     [G,G_transp_G,sum_column_norms_sqr,inner_iters,~] = ...
                                         dispatch_uncoupled(Z,G,nb_modes,G_transp_G,...
                                                            sum_column_norms_sqr,...
@@ -124,32 +156,42 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                                 end
                             end
                             if mode_pos == 1
+                                % Mode 1 is a full factor matrix; refresh its Gram matrix.
                                 G_transp_G{m} = G.fac{m}'*G.fac{m};
                             end
                             out.innerIters(m,iter) = inner_iters;
                         end
                     end
                 end
-            end
+            end % loop over tensors p
 
-                if coupl_id~=0 %modes are coupled: use "coupled ADMM"
-                    ctype = Z.coupling.coupling_type(coupl_id); %type of linear coupling
-                    [inner_iters,lbfgsb_iterations,G] = ADMM_coupled(Z,G,nb_modes,which_p,ctype,lscalar,uscalar,fh,gh,A,B,coupled_modes,coupl_id,rho,options);
-                    out.innerIters(coupled_modes,iter) = inner_iters;
-                    for m=coupled_modes
-                        p = which_p(m);
-                        if strcmp(Z.loss_function{p},'Frobenius')
-                            G_transp_G{m} = G.fac{m}'*G.fac{m}; % update G transposed G for mth mode
-                        else
-                            out.lbfgsb_iterations{m,iter} = lbfgsb_iterations{m};
-                            for r=1:size(G.fac{m},2)
-                                sum_column_norms_sqr(m,1) = norm(G.fac{m}(:,r))^2;
-                            end
+            if coupl_id~=0
+                % Coupled modes: enforce the linear coupling constraint across tensors
+                % by running a joint ADMM step. A and B precomputed above enter as
+                % the per-mode subproblem data; the coupling type determines the
+                % constraint structure (e.g. equality, linear transform).
+                ctype = Z.coupling.coupling_type(coupl_id);
+                [inner_iters,lbfgsb_iterations,G] = ADMM_coupled(Z,G,nb_modes,which_p,ctype,lscalar,uscalar,fh,gh,A,B,coupled_modes,coupl_id,rho,options);
+                out.innerIters(coupled_modes,iter) = inner_iters;
+
+                % After the coupled update, refresh the cached quantities used in
+                % subsequent MTTKRP and objective evaluations.
+                for m=coupled_modes
+                    p = which_p(m);
+                    if strcmp(Z.loss_function{p},'Frobenius')
+                        G_transp_G{m} = G.fac{m}'*G.fac{m};
+                    else
+                        % For non-Frobenius losses G_transp_G is not needed, but
+                        % sum_column_norms_sqr is used in the L-BFGS-B line search.
+                        out.lbfgsb_iterations{m,iter} = lbfgsb_iterations{m};
+                        for r=1:size(G.fac{m},2)
+                            sum_column_norms_sqr(m,1) = norm(G.fac{m}(:,r))^2;
                         end
                     end
                 end
+            end
             %end
-        end
+        end % loop over coupling groups
         
         
        f_tensors_old = f_tensors;
