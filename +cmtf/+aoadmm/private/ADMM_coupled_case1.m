@@ -36,14 +36,14 @@ function [inner_iter,lbfgsb_iterations,G] = ADMM_coupled_case1(Z,G,nb_modes,whic
         for mm=coupled_modes % (can be done in parallel!)
             G.coupling_dual_fac{mm} = G.coupling_dual_fac{mm} + Z.coupling.coupl_trafo_matrices{mm}*G.fac{mm} - G.coupling_fac{Z.coupling.lin_coupled_modes(mm)}; % Update (mu_Delta)
             if Z.constrained_modes(mm)  
-                oldZ{mm} = update_constraint(mm,rho{mm}); %updates G.constraint_fac{mm} and G.constraint_dual_fac{mm}
+                [oldZ{mm}, G] = update_constraint(Z,G,mm,rho{mm}); %updates G.constraint_fac{mm} and G.constraint_dual_fac{mm}
             end
         end
         inner_iter = inner_iter + 1; 
         [rel_primal_res_coupling,rel_dual_res_coupling] = eval_res_ADMM_coupl_case1(Z,G,coupled_modes,coupl_id,oldDelta);
         constrained_modes = coupled_modes(logical(Z.constrained_modes(coupled_modes)));
         if ~isempty(constrained_modes)
-            [rel_primal_res_constr,rel_dual_res_constr] = eval_res_ADMM_constr(constrained_modes,oldZ); % does this work? integrate in loop instead? (no nested function)
+            [rel_primal_res_constr,rel_dual_res_constr] = eval_res_ADMM_constr(G,constrained_modes,oldZ); % does this work? integrate in loop instead? (no nested function)
         else
            rel_primal_res_constr = 0;
            rel_dual_res_constr =0;
