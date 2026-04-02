@@ -41,7 +41,6 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
     end
     P = numel(Z.object);
     G_transp_G = cell(nb_modes,1);
-    sum_column_norms_sqr = zeros(nb_modes,1);
     A = cell(nb_modes,1);
     C = cell(nb_modes,1);
     B = cell(nb_modes,1);
@@ -70,26 +69,7 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
     end
     iter = 1;
     
-    for m=1:nb_modes
-        p = which_p(m);
-        if strcmp(Z.loss_function{p},'Frobenius')
-            if strcmp(Z.model{p},'CP')
-                G_transp_G{m} = G.fac{m}'*G.fac{m}; %precompute G'*G;
-            elseif strcmp(Z.model{p},'PAR2')
-                if 1 == find(Z.modes{p}==m)
-                    G_transp_G{m} = G.fac{m}'*G.fac{m};
-                elseif 2 == find(Z.modes{p}==m)
-                    for k=1:length(Z.size{m})
-                        G_transp_G{m}{k} = G.fac{m}{k}'*G.fac{m}{k};
-                    end
-                end
-            end
-        else
-            for r=1:size(G.fac{m},2)
-                sum_column_norms_sqr(m,1) = sum_column_norms_sqr(m,1)+norm(G.fac{m}(:,r))^2; % need this to compute rho in the non-Frobenius case
-            end
-        end
-    end
+    [G_transp_G,sum_column_norms_sqr] = init_G_transp_G(Z,G,which_p,nb_modes);
 
     s = warning('error', 'MATLAB:nearlySingularMatrix');
     illconditioned = 0;
