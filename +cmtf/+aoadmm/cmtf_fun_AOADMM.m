@@ -120,95 +120,33 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
                     end
                 elseif strcmp(Z.model{p},'PAR2')
                     for m=coupled_modes(which_p(coupled_modes)==p)
-                        if 1 == find(Z.modes{p}==m) %first Parafac2 mode (can be coupled)
-                           A{m} = zeros(size(G.fac{m}));
-                           C{m} = zeros(size(G.fac{m},2),size(G.fac{m},2));
-                           for k=1:length(Z.size{Z.modes{p}(2)})
-                               A{m} = A{m} + Z.object{p}{k}*G.fac{Z.modes{p}(2)}{k}*diag(G.fac{Z.modes{p}(3)}(k,:));
-                               C{m} = C{m} + diag(G.fac{Z.modes{p}(3)}(k,:))*G_transp_G{Z.modes{p}(2)}{k}*diag(G.fac{Z.modes{p}(3)}(k,:));
-                           end 
-                           last_had{p} = C{m};
-                           last_mttkrp{p} = A{m};
-                           last_m(p) = 1;
-                           A{m} = Z.weights(p)*A{m};
-                           rho{m} = trace(C{m})/size(C{m},1);
-                           B{m} = Z.weights(p)* C{m};
-                           if isfield(Z,'ridge')
-                                B{m} = B{m} + Z.ridge(m)*eye(size(B{m}));
-                            end
-                           if options.bsum
-                                A{m} = A{m} + options.bsum_weight/2*G.fac{m};
-                                B{m} = B{m} + options.bsum_weight/2*eye(size(B{m}));
-                           end
-                           if coupl_id==0 %mode is not coupled
-                                if (Z.constrained_modes(m)==0) % mode is not constrained
-                                    G.fac{m} = A{m}/B{m}; %ALS update
-                                    inner_iters = 1;
-                                else % mode is constrained, use ADMM
-                                    B{m} = B{m}+ rho{m}/2*eye(size(B{m})); % for constraint
-                                    L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition
-                                    [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,lscalar,uscalar,fh,gh,A{m},L{m},m,p,rho,options);
-                                end
-                            end
-                            out.innerIters(m,iter)= inner_iters;
-                            G_transp_G{m} = G.fac{m}'*G.fac{m}; % update G transposed G for mth mode
-                        elseif 2 == find(Z.modes{p}==m) %second Parafac2 mode (the funny mode) no external coupling allowed
-                            for k=1:length(Z.size{Z.modes{p}(2)})
-                                A{m}{k} = Z.weights(p)*Z.object{p}{k}'*G.fac{Z.modes{p}(1)}*diag(G.fac{Z.modes{p}(3)}(k,:));
-                                C{m}{k} = diag(G.fac{Z.modes{p}(3)}(k,:))*G_transp_G{Z.modes{p}(1)}*diag(G.fac{Z.modes{p}(3)}(k,:));
-                                rho{m}(k) = trace(C{m}{k})/size(C{m}{k},1);
-                                if isfield(options, 'increase_factor_rhoBk')
-                                    rho{m}(k) = options.increase_factor_rhoBk * rho{m}(k);
-                                end
-                                B{m}{k} = Z.weights(p)* C{m}{k};
-                                B{m}{k} = B{m}{k} + rho{m}(k)/2*eye(size(B{m}{k})); %always coupled 
-                                if isfield(Z,'ridge')
-                                    B{m}{k} = B{m}{k} + Z.ridge(m)*eye(size(B{m}{k}));
-                                end
-                                if options.bsum
-                                    A{m}{k} = A{m}{k} + options.bsum_weight/2*G.fac{m}{k};
-                                    B{m}{k} = B{m}{k} + options.bsum_weight/2*eye(size(B{m}{k}));
-                                end
-                                last_m(p) = 2;
-                                if Z.constrained_modes(m) && iter >= options.iter_start_PAR2Bkconstraint
-                                    B{m}{k} = B{m}{k} + rho{m}(k)/2*eye(size(B{m}{k}));
-                                end
-                                L{m}{k} = chol(B{m}{k},'lower'); %precompute Cholesky decomposition 
-                            end
+                        [A{m},B{m},C{m},rho{m},L{m},G,par2_iters,...
+                         last_mttkrp,last_had,last_m] = ...
+                            precompute_mode_par2(Z,G,G_transp_G,m,p,iter,coupl_id,...
+                                                 last_mttkrp,last_had,last_m,options);
+                        mode_pos = find(Z.modes{p}==m);
+                        if mode_pos == 2 % second PAR2 mode (the "funny" mode)
                             [inner_iters,G] = ADMM_B_Parafac2(Z,G,iter,A{m},L{m},m,p,rho{m},options);
-                            out.innerIters(m,iter)= inner_iters;
+                            out.innerIters(m,iter) = inner_iters;
                             for k=1:length(Z.size{Z.modes{p}(2)})
-                                G_transp_G{m}{k} = G.fac{m}{k}'*G.fac{m}{k}; % update G transposed G for mth mode
+                                G_transp_G{m}{k} = G.fac{m}{k}'*G.fac{m}{k};
                             end
-                        else % third Parafac2 mode, can be coupled
-                            for k=1:length(Z.size{Z.modes{p}(2)})  
-                                A{m}{k} = Z.weights(p)*diag(G.fac{Z.modes{p}(1)}'*Z.object{p}{k}*G.fac{Z.modes{p}(2)}{k});
-                                C{m}{k} = G_transp_G{Z.modes{p}(1)}.*G_transp_G{Z.modes{p}(2)}{k};
-                                rho{m}(k) = trace(C{m}{k})/size(C{m}{k},1);
-                                B{m}{k} = Z.weights(p)* C{m}{k};
-                                if isfield(Z,'ridge')
-                                    B{m}{k} = B{m}{k} + Z.ridge(m)*eye(size(B{m}{k}));
-                                end
-                                %last_mttkrp{p}{k} = A{m}{k}*1/Z.weights(p);
-                                last_m(p) = 3;
-                                if options.bsum
-                                    A{m}{k} = A{m}{k} + options.bsum_weight/2*G.fac{m}(k,:)';
-                                    B{m}{k} = B{m}{k} + options.bsum_weight/2*eye(size(B{m}{k}));
-                                end
-                                if coupl_id==0 %mode is not coupled
-                                    if (Z.constrained_modes(m)==0) % mode is not constrained
-                                        G.fac{m}(k,:) = (B{m}{k}\A{m}{k})'; % ALS update (row-wise)
-                                        inner_iters = 1;
-                                    else  % is constrained, use ADMM (here only precomputations)
-                                        B{m}{k} = B{m}{k} + rho{m}(k)/2*eye(size(B{m}{k}));
-                                        L{m}{k} = chol(B{m}{k}','lower'); %precompute Cholesky decomposition
-                                    end
+                        else % mode_pos 1 or 3
+                            if coupl_id==0
+                                if ~isempty(par2_iters) % mode 3 unconstrained: update done in precompute
+                                    inner_iters = par2_iters;
+                                else
+                                    [G,G_transp_G,sum_column_norms_sqr,inner_iters,~] = ...
+                                        dispatch_uncoupled(Z,G,nb_modes,G_transp_G,...
+                                                           sum_column_norms_sqr,...
+                                                           A{m},B{m},L{m},rho{m},...
+                                                           m,p,rho,lscalar,uscalar,fh,gh,options);
                                 end
                             end
-                            if Z.constrained_modes(m) && coupl_id == 0 % is constrained and not coupled, use ADMM
-                                [inner_iters,lbfgsb_iterations,G] = ADMM_constrained_only(Z,G,nb_modes,lscalar,uscalar,fh,gh,A{m},L{m},m,p,rho,options);
+                            if mode_pos == 1
+                                G_transp_G{m} = G.fac{m}'*G.fac{m};
                             end
-                            out.innerIters(m,iter)= inner_iters;
+                            out.innerIters(m,iter) = inner_iters;
                         end
                     end
                 end
