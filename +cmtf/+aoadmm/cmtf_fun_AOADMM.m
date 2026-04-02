@@ -45,8 +45,6 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
     A = cell(nb_modes,1);
     C = cell(nb_modes,1);
     B = cell(nb_modes,1);
-    B2 = cell(nb_modes,1);
-    L = cell(nb_modes,1);
     rho = cell(nb_modes,1);
     last_m = zeros(P,1);
     last_mttkrp = cell(P,1); %for efficient function value computation
@@ -267,78 +265,8 @@ function [G,out] = cmtf_fun_AOADMM(Z,Znorm_const, G,fh,gh,lscalar,uscalar,option
 
                 if coupl_id~=0 %modes are coupled: use "coupled ADMM"
                     ctype = Z.coupling.coupling_type(coupl_id); %type of linear coupling
-                    switch ctype
-                        case 0 %exact coupling
-                            for m=coupled_modes
-                                p = which_p(m);
-                                if strcmp(Z.loss_function{p},'Frobenius')
-                                    if strcmp(Z.model{p},'PAR2') && 3 == find(Z.modes{p}==m) % third Parafac2 mode
-                                        for k=1:length(Z.size{Z.modes{p}(2)}) 
-                                            B{m}{k} = B{m}{k} + rho{m}(k)/2*eye(size(B{m}{k})); %for the coupling
-                                            if Z.constrained_modes(m) %mode is constrained
-                                               B{m}{k} = B{m}{k} + rho{m}(k)/2*eye(size(B{m}{k})); %for the constraint
-                                            end
-                                            L{m}{k} = chol(B{m}{k}','lower'); %precompute Cholesky decomposition
-                                        end
-                                    else
-                                        B{m} = B{m} + rho{m}/2* eye(size(B{m})); % for the coupling
-                                        if Z.constrained_modes(m) %mode is constrained
-                                            B{m} = B{m} + rho{m}/2*eye(size(B{m}));
-                                        end
-                                        L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition of B (only works in the chase when rho does not change between inner iterations)
-                                    end
-                                end
-                            end
-                            [inner_iters,lbfgsb_iterations,G] = ADMM_coupled_case0(Z,G,nb_modes,which_p,m,lscalar,uscalar,fh,gh,A,L,coupled_modes,coupl_id,rho,options);
-                        case 1 % mode is linear coupled with trafo matrix from left, use ADMM with silvester equation
-                            for m=coupled_modes
-                                p = which_p(m);
-                                if strcmp(Z.loss_function{p},'Frobenius')
-                                    B2{m} = rho{m}/2* Z.coupling.coupl_trafo_matrices{m}'*Z.coupling.coupl_trafo_matrices{m}; % precompute????
-                                    if Z.constrained_modes(m) %mode is constrained 
-                                        B2{m} = B2{m} + rho{m}/2*eye(size(B2{m}));
-                                    end
-                                end
-                            end
-                            [inner_iters,lbfgsb_iterations,G] = ADMM_coupled_case1(Z,G,nb_modes,which_p,m,lscalar,uscalar,fh,gh,A,B,B2,coupled_modes,coupl_id,rho,options);
-                        case 2
-                            for m=coupled_modes
-                                p = which_p(m);
-                                if strcmp(Z.loss_function{p},'Frobenius')
-                                    B{m} = B{m} + rho{m}/2* Z.coupling.coupl_trafo_matrices{m}*Z.coupling.coupl_trafo_matrices{m}'; % precompute????; % for the coupling
-                                    if Z.constrained_modes(m) %mode is constrained
-                                        B{m} = B{m} + rho{m}/2*eye(size(B{m}));
-                                    end
-                                    L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition of B (only works in the chase when rho does not change between inner iterations)
-                                end
-                            end
-                            [inner_iters,lbfgsb_iterations,G] = ADMM_coupled_case2(Z,G,nb_modes,which_p,m,lscalar,uscalar,fh,gh,A,L,coupled_modes,coupl_id,rho,options);
-                        case 3
-                            for m=coupled_modes
-                                p = which_p(m);
-                                if strcmp(Z.loss_function{p},'Frobenius')
-                                    B{m} = B{m} + rho{m}/2* eye(size(B{m})); % for the coupling
-                                    if Z.constrained_modes(m) %mode is constrained
-                                        B{m} = B{m} + rho{m}/2*eye(size(B{m}));
-                                    end
-                                    L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition of B (only works in the chase when rho does not change between inner iterations)
-                                end
-                            end
-                            [inner_iters,lbfgsb_iterations,G] = ADMM_coupled_case3(Z,G,nb_modes,which_p,m,lscalar,uscalar,fh,gh,A,L,coupled_modes,coupl_id,rho,options);
-                        case 4
-                            for m=coupled_modes
-                                p = which_p(m);
-                                if strcmp(Z.loss_function{p},'Frobenius')
-                                    B{m} = B{m} + rho{m}/2* eye(size(B{m})); % for the coupling
-                                    if Z.constrained_modes(m) %mode is constrained
-                                        B{m} = B{m} + rho{m}/2*eye(size(B{m}));
-                                    end
-                                    L{m} = chol(B{m}','lower'); %precompute Cholesky decomposition of B (only works in the chase when rho does not change between inner iterations)
-                                end
-                            end
-                            [inner_iters,lbfgsb_iterations,G] = ADMM_coupled_case4(Z,G,nb_modes,which_p,m,lscalar,uscalar,fh,gh,A,L,coupled_modes,coupl_id,rho,options);
-                    end
-                    out.innerIters(coupled_modes,iter)= inner_iters;
+                    [inner_iters,lbfgsb_iterations,G] = ADMM_coupled(Z,G,nb_modes,which_p,ctype,lscalar,uscalar,fh,gh,A,B,coupled_modes,coupl_id,rho,options);
+                    out.innerIters(coupled_modes,iter) = inner_iters;
                     for m=coupled_modes
                         p = which_p(m);
                         if strcmp(Z.loss_function{p},'Frobenius')
