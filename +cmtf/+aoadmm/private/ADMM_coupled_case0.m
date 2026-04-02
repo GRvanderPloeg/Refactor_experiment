@@ -45,7 +45,6 @@ function [inner_iter,lbfgsb_iterations,G] = ADMM_coupled_case0(Z,G,nb_modes,whic
                 end
             else
                 G.coupling_fac{coupl_id} = G.coupling_fac{coupl_id} + rho{jj}*(G.fac{jj} + G.coupling_dual_fac{jj});
-                [jj rho{jj} norm(G.fac{jj}) norm(G.coupling_dual_fac{jj}) norm(G.fac{jj} + G.coupling_dual_fac{jj})];
             end
             sum_rho = sum_rho + rho{jj};
         end
